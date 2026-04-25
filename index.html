@@ -73,7 +73,6 @@
         }
         textarea:focus {
             border-color: var(--accent);
-            box-shadow: 0 0 0 5px rgba(0, 245, 160, 0.15);
         }
 
         .input-tools {
@@ -114,11 +113,7 @@
 
         /* Language Buttons */
         .lang-section { margin-top: 1.8rem; }
-        .lang-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
+        .lang-row { display: flex; flex-wrap: wrap; gap: 10px; }
         .lang-btn {
             padding: 10px 22px;
             font-size: 14px;
@@ -129,15 +124,11 @@
             cursor: pointer;
             transition: all 0.25s;
         }
-        .lang-btn:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-        }
+        .lang-btn:hover { border-color: var(--accent); color: var(--accent); }
         .lang-btn.active {
             background: rgba(0, 245, 160, 0.18);
             border-color: var(--accent);
             color: var(--accent);
-            box-shadow: 0 0 15px rgba(0, 245, 160, 0.25);
         }
 
         /* Result */
@@ -196,40 +187,50 @@
         <button class="scan-btn" id="scanBtn" onclick="analyze()">🔍 Scan for Phishing</button>
     </div>
 
-    <!-- Result Area -->
+    <!-- Result -->
     <div class="result" id="result">
         <div class="verdict-card" id="verdictCard">
             <div id="scoreCircle" class="score-circle" style="--score: 0">
                 <div class="score-circle-inner">
                     <div class="score-number" id="scoreNum">0</div>
-                    <div style="font-size:13px; color:var(--muted);">RISK SCORE</div>
+                    <div style="font-size:13px;color:var(--muted);">RISK SCORE</div>
                 </div>
             </div>
-            <div class="verdict-emoji" id="verdictEmoji" style="font-size:52px; margin:10px 0;"></div>
-            <div class="verdict-title" id="verdictTitle" style="font-size:26px; font-weight:700;"></div>
+            <div class="verdict-emoji" id="verdictEmoji" style="font-size:52px;margin:12px 0;"></div>
+            <div class="verdict-title" id="verdictTitle" style="font-size:26px;font-weight:700;"></div>
         </div>
 
         <div class="flags-card" id="flagsCard" style="display:none;">
             <h3 style="color:var(--red);">🔴 Red Flags Detected</h3>
-            <div id="flagsList" style="margin-top:10px; line-height:1.7;"></div>
+            <div id="flagsList" style="margin-top:12px;"></div>
         </div>
 
         <div class="detail-card">
             <h3>📝 Explanation</h3>
-            <div id="explanationBox" style="margin-top:12px; line-height:1.8; color:var(--text);"></div>
+            <div id="explanationBox" style="margin-top:12px;line-height:1.8;"></div>
         </div>
 
         <div class="detail-card">
             <h3>🛡️ Safety Tip</h3>
-            <div id="tipBox" style="margin-top:12px; line-height:1.8; color:var(--text);"></div>
+            <div id="tipBox" style="margin-top:12px;line-height:1.8;"></div>
         </div>
+    </div>
+
+    <!-- Follow-up Chatbot Section -->
+    <div class="followup-section" id="followupSection" style="display:none; margin-top:2.5rem;">
+        <h3 style="margin-bottom:12px;">Ask Follow-up Questions</h3>
+        <div style="display:flex; gap:12px;">
+            <textarea id="followupInput" placeholder="Example: Why is this phishing? Explain in simple terms..." style="flex:1; min-height:52px; background:var(--surface2); color:var(--text); border:1px solid var(--border); border-radius:12px; padding:14px;"></textarea>
+            <button onclick="askFollowup()" style="padding:0 28px; background:var(--accent); color:#000; border:none; border-radius:12px; font-weight:600; cursor:pointer;">Ask</button>
+        </div>
+        <div id="followupResponse" style="margin-top:1rem; padding:1.2rem; background:var(--surface2); border-radius:12px; min-height:80px; display:none;"></div>
     </div>
 </div>
 
 <script>
 let selectedLang = "English";
+let currentAnalysis = "";
 
-// Language buttons
 document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
@@ -238,13 +239,9 @@ document.querySelectorAll('.lang-btn').forEach(btn => {
     });
 });
 
-// Main Analyze Function
 async function analyze() {
     const msg = document.getElementById('msgInput').value.trim();
-    if (!msg) {
-        alert("Please paste a message, URL or email");
-        return;
-    }
+    if (!msg) return alert("Please paste a message");
 
     document.getElementById('scanBtn').textContent = "Analyzing...";
     document.getElementById('scanBtn').disabled = true;
@@ -258,9 +255,7 @@ async function analyze() {
 
         const r = await res.json();
 
-        if (r.error) throw new Error(r.error);
-
-        // Show Result
+        // Display main result
         const verdict = (r.verdict || 'SUSPICIOUS').toUpperCase();
         const score = Math.min(100, Math.max(0, r.risk_score || 50));
 
@@ -270,37 +265,54 @@ async function analyze() {
         document.getElementById('verdictEmoji').textContent = verdict === 'PHISHING' ? '🚨' : verdict === 'SUSPICIOUS' ? '⚠️' : '✅';
         document.getElementById('verdictTitle').textContent = verdict === 'PHISHING' ? 'Phishing Detected' : verdict === 'SUSPICIOUS' ? 'Suspicious' : 'Looks Safe';
 
-        // Red Flags
         const flagsCard = document.getElementById('flagsCard');
         if (r.red_flags && r.red_flags.length > 0) {
             flagsCard.style.display = 'block';
-            document.getElementById('flagsList').innerHTML = r.red_flags.map(f => `<div>• ${f}</div>`).join('');
+            document.getElementById('flagsList').innerHTML = r.red_flags.map(f => `<div style="margin:6px 0;">• ${f}</div>`).join('');
         } else {
             flagsCard.style.display = 'none';
         }
 
         document.getElementById('explanationBox').textContent = r.explanation || "No explanation available.";
-        document.getElementById('tipBox').textContent = r.safety_tip || "Be careful with unknown links and never share OTPs.";
+        document.getElementById('tipBox').textContent = r.safety_tip || "Always be cautious with unknown messages.";
 
         document.getElementById('result').style.display = 'block';
+        document.getElementById('followupSection').style.display = 'block';
+
+        currentAnalysis = msg;
 
     } catch (e) {
-        alert("Analysis failed. Please check your connection and try again.");
-        console.error(e);
+        alert("Analysis failed. Please try again.");
     } finally {
         document.getElementById('scanBtn').textContent = "🔍 Scan for Phishing";
         document.getElementById('scanBtn').disabled = false;
     }
 }
 
-// Voice & Image (kept simple)
-document.getElementById('micBtn').addEventListener('click', () => {
-    alert("Voice input is not fully set up in this version. Use keyboard for now.");
-});
+async function askFollowup() {
+    const question = document.getElementById('followupInput').value.trim();
+    if (!question || !currentAnalysis) return;
 
-document.getElementById('uploadBtn').addEventListener('click', () => {
-    alert("Image upload (OCR) is not fully configured in this version.");
-});
+    const responseBox = document.getElementById('followupResponse');
+    responseBox.style.display = 'block';
+    responseBox.textContent = "Thinking...";
+
+    try {
+        const res = await fetch('/api/analyze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                message: `Original message was: ${currentAnalysis}\n\nFollow-up question: ${question}`,
+                language: selectedLang
+            })
+        });
+
+        const r = await res.json();
+        responseBox.textContent = r.explanation || r.safety_tip || "No response received.";
+    } catch (e) {
+        responseBox.textContent = "Sorry, I couldn't answer that right now. Try again.";
+    }
+}
 </script>
 </body>
 </html>
