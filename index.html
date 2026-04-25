@@ -69,10 +69,48 @@
             padding: 20px;
             font-size: 16px;
             color: var(--text);
-            line-height: 1.6;
         }
         textarea:focus {
             border-color: var(--accent);
+        }
+
+        /* Improved Language Buttons */
+        .lang-section {
+            margin-top: 1.8rem;
+        }
+        .lang-section span {
+            font-size: 14px;
+            color: var(--muted);
+            margin-bottom: 10px;
+            display: block;
+        }
+        .lang-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .lang-btn {
+            padding: 10px 24px;
+            font-size: 14px;
+            border-radius: 30px;
+            border: 1px solid var(--border);
+            background: var(--surface2);
+            color: var(--muted);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-weight: 500;
+        }
+        .lang-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+        .lang-btn.active {
+            background: rgba(0, 245, 160, 0.2);
+            border-color: var(--accent);
+            color: var(--accent);
+            box-shadow: 0 0 15px rgba(0, 245, 160, 0.3);
+            font-weight: 600;
         }
 
         .scan-btn {
@@ -87,27 +125,6 @@
             cursor: pointer;
         }
 
-        /* Language Buttons */
-        .lang-section { margin-top: 1.8rem; }
-        .lang-row { display: flex; flex-wrap: wrap; gap: 10px; }
-        .lang-btn {
-            padding: 10px 22px;
-            font-size: 14px;
-            border-radius: 30px;
-            border: 1px solid var(--border);
-            background: var(--surface2);
-            color: var(--muted);
-            cursor: pointer;
-            transition: all 0.25s;
-        }
-        .lang-btn:hover { border-color: var(--accent); color: var(--accent); }
-        .lang-btn.active {
-            background: rgba(0, 245, 160, 0.18);
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-
-        /* Result */
         .result { display: none; margin-top: 2rem; }
         .verdict-card, .flags-card, .detail-card {
             background: var(--surface);
@@ -135,6 +152,7 @@
             <div class="logo-icon">🛡️</div>
             <h1>Phish<span>Guard</span></h1>
         </div>
+        <p style="color:var(--muted);">Multilingual phishing detector for Hindi, Telugu, Tamil & English users</p>
     </header>
 
     <div class="card">
@@ -143,7 +161,7 @@
         <textarea id="msgInput" placeholder="Paste your suspicious message, email or URL here..."></textarea>
 
         <div class="lang-section">
-            <span style="color:var(--muted);">Explain the risk in:</span>
+            <span>Explain the risk in:</span>
             <div class="lang-row">
                 <button class="lang-btn active" data-lang="English">English</button>
                 <button class="lang-btn" data-lang="Hindi">हिंदी</button>
@@ -153,10 +171,9 @@
             </div>
         </div>
 
-        <button class="scan-btn" id="scanBtn" onclick="analyze()">🔍 Scan for Phishing</button>
+        <button class="scan-btn" onclick="analyze()">🔍 Scan for Phishing</button>
     </div>
 
-    <!-- Result -->
     <div class="result" id="result">
         <div class="verdict-card" id="verdictCard">
             <div id="scoreCircle" class="score-circle" style="--score: 0">
@@ -184,51 +201,22 @@
             <div id="tipBox" style="margin-top:12px;line-height:1.8;"></div>
         </div>
     </div>
-
-    <!-- Follow-up Section -->
-    <div class="followup-section" id="followupSection" style="display:none; margin-top:2.5rem; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:2rem;">
-        <h3>Ask Follow-up Questions</h3>
-        <div style="display:flex; gap:12px; margin-top:12px;">
-            <textarea id="followupInput" placeholder="Why is this phishing? Explain in simple terms..." style="flex:1; min-height:52px; background:var(--surface2); color:var(--text); border:1px solid var(--border); border-radius:12px; padding:14px;"></textarea>
-            <button onclick="askFollowup()" style="padding:0 28px; background:var(--accent); color:#000; border:none; border-radius:12px; font-weight:600; cursor:pointer;">Ask</button>
-        </div>
-        <div id="followupResponse" style="margin-top:1rem; padding:1.2rem; background:var(--surface2); border-radius:12px; min-height:80px; display:none;"></div>
-    </div>
 </div>
 
 <script>
-let selectedLang = "English";
-let currentAnalysis = "";
-
-document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        selectedLang = btn.dataset.lang;
-    });
-});
-
 async function analyze() {
     const msg = document.getElementById('msgInput').value.trim();
-    if (!msg) {
-        alert("Please paste a message first");
-        return;
-    }
-
-    const scanBtn = document.getElementById('scanBtn');
-    scanBtn.textContent = "Analyzing...";
-    scanBtn.disabled = true;
+    if (!msg) return alert("Please paste a message");
 
     try {
         const res = await fetch('/api/analyze', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: msg, language: selectedLang })
+            body: JSON.stringify({ message: msg, language: "English" })
         });
 
         const r = await res.json();
 
-        // Show result
         const verdict = (r.verdict || 'SUSPICIOUS').toUpperCase();
         const score = Math.min(100, Math.max(0, r.risk_score || 50));
 
@@ -238,51 +226,15 @@ async function analyze() {
         document.getElementById('verdictEmoji').textContent = verdict === 'PHISHING' ? '🚨' : verdict === 'SUSPICIOUS' ? '⚠️' : '✅';
         document.getElementById('verdictTitle').textContent = verdict === 'PHISHING' ? 'Phishing Detected' : verdict === 'SUSPICIOUS' ? 'Suspicious' : 'Looks Safe';
 
-        const flagsCard = document.getElementById('flagsCard');
-        if (r.red_flags && r.red_flags.length > 0) {
-            flagsCard.style.display = 'block';
-            document.getElementById('flagsList').innerHTML = r.red_flags.map(f => `<div>• ${f}</div>`).join('');
-        } else {
-            flagsCard.style.display = 'none';
-        }
+        document.getElementById('flagsList').innerHTML = (r.red_flags || []).map(f => `<div>• ${f}</div>`).join('');
+        document.getElementById('flagsCard').style.display = (r.red_flags && r.red_flags.length) ? 'block' : 'none';
 
-        document.getElementById('explanationBox').textContent = r.explanation || "No explanation available.";
-        document.getElementById('tipBox').textContent = r.safety_tip || "Never share OTPs or click suspicious links.";
+        document.getElementById('explanationBox').textContent = r.explanation || '';
+        document.getElementById('tipBox').textContent = r.safety_tip || '';
 
         document.getElementById('result').style.display = 'block';
-        document.getElementById('followupSection').style.display = 'block';
-
-        currentAnalysis = msg;
-
     } catch (e) {
-        alert("Analysis failed. Please check your internet connection and try again.");
-    } finally {
-        scanBtn.textContent = "🔍 Scan for Phishing";
-        scanBtn.disabled = false;
-    }
-}
-
-async function askFollowup() {
-    const question = document.getElementById('followupInput').value.trim();
-    if (!question) return;
-
-    const box = document.getElementById('followupResponse');
-    box.style.display = 'block';
-    box.textContent = "Thinking...";
-
-    try {
-        const res = await fetch('/api/analyze', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                message: `Original: ${currentAnalysis}\nQuestion: ${question}`,
-                language: selectedLang
-            })
-        });
-        const r = await res.json();
-        box.textContent = r.explanation || "No clear answer.";
-    } catch (e) {
-        box.textContent = "Sorry, couldn't get answer. Try again.";
+        alert("Analysis failed. Please try again.");
     }
 }
 </script>
