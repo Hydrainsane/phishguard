@@ -16,6 +16,8 @@
             --surface2: #1a1f2e;
             --border: rgba(255,255,255,0.08);
             --accent: #00f5a0;
+            --red: #ff4d4d;
+            --yellow: #ffcc33;
             --text: #f0f2f8;
             --muted: #8a94b0;
             --radius: 16px;
@@ -25,13 +27,13 @@
             color: var(--text);
             font-family: 'DM Sans', sans-serif;
             min-height: 100vh;
-            padding: 2rem 1rem;
+            padding: 2.5rem 1rem 4rem;
         }
         .container { max-width: 760px; margin: 0 auto; }
 
         header {
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
         }
         .logo {
             display: inline-flex;
@@ -54,76 +56,40 @@
             letter-spacing: -1.6px;
         }
         .logo h1 span { color: var(--accent); }
+        .tagline { font-size: 16px; color: var(--muted); margin-top: 8px; }
 
-        .chat-container {
+        .card {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            height: 72vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            padding: 2.5rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.45);
         }
 
-        .chat-messages {
-            flex: 1;
-            padding: 1.8rem;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 1.2rem;
-        }
-
-        .message {
-            max-width: 85%;
-            padding: 15px 20px;
-            border-radius: 18px;
-            line-height: 1.65;
-            font-size: 15.5px;
-        }
-        .user-message {
-            align-self: flex-end;
-            background: var(--accent);
-            color: #000;
-            border-bottom-right-radius: 6px;
-        }
-        .ai-message {
-            align-self: flex-start;
-            background: var(--surface2);
-            border: 1px solid var(--border);
-        }
-
-        .input-area {
-            padding: 1.2rem;
-            background: var(--surface);
-            border-top: 1px solid var(--border);
-            display: flex;
-            gap: 12px;
-            align-items: flex-end;
-        }
+        .input-area { position: relative; }
         textarea {
-            flex: 1;
-            min-height: 54px;
-            max-height: 140px;
+            width: 100%;
+            min-height: 180px;
             background: var(--surface2);
-            border: 1px solid var(--border);
+            border: 2px solid var(--border);
             border-radius: 14px;
-            padding: 16px 18px;
-            font-size: 15.5px;
-            resize: none;
+            padding: 20px;
+            font-size: 16px;
         }
         textarea:focus {
-            outline: none;
             border-color: var(--accent);
+            box-shadow: 0 0 0 5px rgba(0, 245, 160, 0.15);
         }
 
         .input-tools {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
             display: flex;
-            gap: 8px;
+            gap: 10px;
         }
         .tool-btn {
-            width: 48px; height: 48px;
+            width: 46px; height: 46px;
             border-radius: 50%;
             background: var(--surface2);
             border: 1px solid var(--border);
@@ -133,21 +99,96 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.2s;
         }
         .tool-btn:hover {
             background: var(--accent);
             color: #000;
-            transform: scale(1.1);
         }
 
-        .send-btn {
+        .scan-btn {
+            margin-top: 2rem;
+            width: 100%;
+            padding: 16px;
             background: linear-gradient(90deg, #00f5a0, #00d49a);
             color: #000;
             border: none;
-            padding: 0 26px;
-            border-radius: 14px;
+            border-radius: 12px;
             font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        /* Result */
+        .result { display: none; margin-top: 2rem; }
+        .verdict-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            text-align: center;
+        }
+        .score-circle {
+            width: 160px; height: 160px;
+            margin: 0 auto 1.5rem;
+            border-radius: 50%;
+            background: conic-gradient(var(--accent) 0deg, var(--accent) calc(var(--score) * 3.6deg), #222 calc(var(--score) * 3.6deg));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .score-circle-inner {
+            width: 124px; height: 124px;
+            background: var(--surface);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .score-number { font-size: 48px; font-weight: 700; }
+        .verdict-emoji { font-size: 52px; margin: 12px 0; }
+        .verdict-title { font-size: 26px; font-weight: 700; }
+
+        .flags-card, .detail-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.8rem;
+            margin-bottom: 1.2rem;
+        }
+
+        /* Follow-up Section */
+        .followup-section {
+            margin-top: 2.5rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+        }
+        .followup-section h3 {
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+        .followup-input {
+            display: flex;
+            gap: 12px;
+        }
+        .followup-input textarea {
+            flex: 1;
+            min-height: 52px;
+            max-height: 110px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+        }
+        .ask-btn {
+            padding: 0 24px;
+            background: var(--accent);
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
             cursor: pointer;
         }
     </style>
@@ -159,33 +200,79 @@
             <div class="logo-icon">🛡️</div>
             <h1>Phish<span>Guard</span></h1>
         </div>
+        <p class="tagline">Multilingual phishing detector for Hindi, Telugu, Tamil & English users</p>
     </header>
 
-    <div class="chat-container">
-        <div class="chat-messages" id="chatMessages">
-            <div class="ai-message message">
-                Hi! I'm PhishGuard.<br><br>
-                Send any suspicious message, email, URL, or upload a screenshot.<br>
-                After analysis, you can ask follow-up questions like:<br>
-                • "Why is this phishing?"<br>
-                • "Explain in simple Hindi"<br>
-                • "Is the link safe?"
-            </div>
-        </div>
-
+    <div class="card">
+        <div style="margin-bottom:12px; font-weight:600; color:var(--muted);">Paste suspicious message, URL, or email</div>
+        
         <div class="input-area">
+            <textarea id="msgInput" placeholder="Paste your suspicious message, email or URL here..."></textarea>
             <div class="input-tools">
                 <button class="tool-btn" id="micBtn" title="Voice Input">🎤</button>
                 <button class="tool-btn" id="uploadBtn" title="Upload Screenshot">📸</button>
                 <input type="file" id="imageInput" accept="image/*" style="display:none;">
             </div>
-            <textarea id="userInput" placeholder="Paste message or ask follow-up question..." rows="1"></textarea>
-            <button class="send-btn" id="sendBtn">Send</button>
         </div>
+
+        <div style="margin-top:1.5rem;">
+            <span style="font-size:14px;color:var(--muted);">Explain the risk in:</span>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;">
+                <button class="lang-btn active" data-lang="English">English</button>
+                <button class="lang-btn" data-lang="Hindi">हिंदी</button>
+                <button class="lang-btn" data-lang="Telugu">తెలుగు</button>
+                <button class="lang-btn" data-lang="Tamil">தமிழ்</button>
+                <button class="lang-btn" data-lang="the same language as the input message">Auto</button>
+            </div>
+        </div>
+
+        <button class="scan-btn" id="scanBtn" onclick="analyze()">🔍 Scan for Phishing</button>
+    </div>
+
+    <!-- Main Analysis Result -->
+    <div class="result" id="result">
+        <div class="verdict-card" id="verdictCard">
+            <div id="scoreCircle" class="score-circle" style="--score: 0">
+                <div class="score-circle-inner">
+                    <div class="score-number" id="scoreNum">0</div>
+                    <div style="font-size:13px;color:var(--muted);">RISK SCORE</div>
+                </div>
+            </div>
+            <div class="verdict-emoji" id="verdictEmoji"></div>
+            <div class="verdict-title" id="verdictTitle"></div>
+            <div id="verdictSub" style="color:var(--muted);margin-top:8px;"></div>
+        </div>
+
+        <div class="flags-card" id="flagsCard" style="display:none;">
+            <h3 style="color:var(--red);">🔴 Red Flags Detected</h3>
+            <div id="flagsList"></div>
+        </div>
+
+        <div class="detail-card">
+            <h3>📝 Explanation</h3>
+            <div id="explanationBox" style="line-height:1.8;"></div>
+        </div>
+
+        <div class="detail-card">
+            <h3>🛡️ Safety Tip</h3>
+            <div id="tipBox" style="line-height:1.8;"></div>
+        </div>
+    </div>
+
+    <!-- Follow-up Chatbot Section -->
+    <div class="followup-section" id="followupSection" style="display:none;">
+        <h3>Ask Follow-up Questions</h3>
+        <p style="color:var(--muted);margin-bottom:12px;">Example: "Why is this phishing?", "Explain in simple Hindi", "Is the link safe?"</p>
+        <div class="followup-input">
+            <textarea id="followupInput" placeholder="Type your question here..."></textarea>
+            <button class="ask-btn" onclick="askFollowup()">Ask</button>
+        </div>
+        <div id="followupResponse" style="margin-top:1.2rem; padding:1.2rem; background:var(--surface2); border-radius:12px; min-height:80px; display:none;"></div>
     </div>
 </div>
 
 <script>
+// Examples
 const examples = [
     "Dear Customer, Your SBI account has been blocked. Click here to verify KYC immediately: http://sbi-kyc-update.xyz/verify",
     "అభినందనలు! మీరు 50 లక్షల లాటరీ గెలుచుకున్నారు. క్లిక్ చేయండి: http://lottery-win.tk/claim",
@@ -195,16 +282,16 @@ const examples = [
 ];
 
 let selectedLang = "English";
+let currentAnalysis = "";
 
-// Add message to chat
-function addMessage(text, isUser = false) {
-    const chat = document.getElementById('chatMessages');
-    const div = document.createElement('div');
-    div.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
-    div.textContent = text;
-    chat.appendChild(div);
-    chat.scrollTop = chat.scrollHeight;
-}
+// Language buttons
+document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedLang = btn.dataset.lang;
+    });
+});
 
 // Voice Input
 const micBtn = document.getElementById('micBtn');
@@ -213,26 +300,17 @@ if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     recognition = new SR();
     recognition.lang = 'en-IN';
-    recognition.onresult = e => {
-        document.getElementById('userInput').value = e.results[0][0].transcript;
-    };
+    recognition.onresult = e => document.getElementById('msgInput').value = e.results[0][0].transcript;
 }
 micBtn.addEventListener('click', () => {
-    if (recognition) {
-        micBtn.style.background = '#ff4d4d';
-        recognition.start();
-        setTimeout(() => micBtn.style.background = 'var(--surface2)', 3000);
-    } else {
-        alert("Voice input works best in Chrome/Edge");
-    }
+    if (recognition) recognition.start();
+    else alert("Voice input works best in Chrome/Edge");
 });
 
 // Image Upload + OCR
 const uploadBtn = document.getElementById('uploadBtn');
 const imageInput = document.getElementById('imageInput');
-
 uploadBtn.addEventListener('click', () => imageInput.click());
-
 imageInput.addEventListener('change', async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -241,69 +319,94 @@ imageInput.addEventListener('change', async (e) => {
         const { createWorker } = Tesseract;
         const worker = await createWorker(['eng','hin','tel','tam']);
         const { data } = await worker.recognize(file);
-        document.getElementById('userInput').value = data.text.trim();
+        document.getElementById('msgInput').value = data.text.trim();
         await worker.terminate();
-        alert("✅ Text extracted from image. Click Send.");
+        alert("Text extracted successfully!");
     } catch(err) {
-        alert("Could not read the image clearly.");
+        alert("Failed to read image. Try a clearer screenshot.");
     }
     uploadBtn.textContent = '📸';
 });
 
-// Send message
-async function sendMessage() {
-    const inputEl = document.getElementById('userInput');
-    const text = inputEl.value.trim();
-    if (!text) return;
+// Main Analysis
+async function analyze() {
+    const msg = document.getElementById('msgInput').value.trim();
+    if (!msg) return alert("Please paste a message");
 
-    addMessage(text, true);
-    inputEl.value = '';
-
-    // Show loading
-    const chat = document.getElementById('chatMessages');
-    const loading = document.createElement('div');
-    loading.className = "ai-message message";
-    loading.textContent = "Analyzing...";
-    chat.appendChild(loading);
-    chat.scrollTop = chat.scrollHeight;
+    document.getElementById('scanBtn').disabled = true;
 
     try {
         const res = await fetch('/api/analyze', {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: msg, language: selectedLang })
+        });
+
+        const r = await res.json();
+
+        showResult(r);
+        currentAnalysis = msg; // Save for follow-up
+
+        document.getElementById('result').style.display = 'block';
+        document.getElementById('followupSection').style.display = 'block';
+    } catch (e) {
+        alert("Analysis failed. Please try again.");
+    } finally {
+        document.getElementById('scanBtn').disabled = false;
+    }
+}
+
+function showResult(r) {
+    const verdict = (r.verdict || 'SUSPICIOUS').toUpperCase();
+    const score = Math.min(100, Math.max(0, r.risk_score || 50));
+
+    document.getElementById('scoreCircle').style.setProperty('--score', score);
+    document.getElementById('scoreNum').textContent = score;
+
+    const emojis = { SAFE: '✅', SUSPICIOUS: '⚠️', PHISHING: '🚨' };
+    const titles = { SAFE: 'Safe to Proceed', SUSPICIOUS: 'Suspicious', PHISHING: 'Phishing Detected' };
+
+    document.getElementById('verdictEmoji').textContent = emojis[verdict] || '⚠️';
+    document.getElementById('verdictTitle').textContent = titles[verdict] || verdict;
+
+    // Red flags
+    const flagsCard = document.getElementById('flagsCard');
+    if (r.red_flags && r.red_flags.length > 0) {
+        flagsCard.style.display = 'block';
+        document.getElementById('flagsList').innerHTML = r.red_flags.map(f => `<div style="margin:8px 0;">• ${f}</div>`).join('');
+    } else {
+        flagsCard.style.display = 'none';
+    }
+
+    document.getElementById('explanationBox').textContent = r.explanation || '';
+    document.getElementById('tipBox').textContent = r.safety_tip || '';
+}
+
+// Follow-up Question
+async function askFollowup() {
+    const question = document.getElementById('followupInput').value.trim();
+    if (!question || !currentAnalysis) return;
+
+    const responseBox = document.getElementById('followupResponse');
+    responseBox.style.display = 'block';
+    responseBox.textContent = "Thinking...";
+
+    try {
+        const res = await fetch('/api/analyze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                message: text,
+                message: `Original message: ${currentAnalysis}\n\nUser question: ${question}`,
                 language: selectedLang
             })
         });
 
-        const data = await res.json();
-        chat.removeChild(loading);
-
-        if (data.error) {
-            addMessage("Sorry, I couldn't analyze that. Please try again.", false);
-        } else {
-            let response = `**Verdict:** ${data.verdict || 'SUSPICIOUS'} (${data.risk_score || 50}/100)\n\n`;
-            response += data.explanation || "No explanation available.";
-            if (data.safety_tip) response += `\n\n**Safety Tip:** ${data.safety_tip}`;
-            
-            addMessage(response, false);
-        }
-    } catch (err) {
-        chat.removeChild(loading);
-        addMessage("Connection error. Please check your internet and try again.", false);
+        const r = await res.json();
+        responseBox.textContent = r.explanation || r.safety_tip || "No response received.";
+    } catch (e) {
+        responseBox.textContent = "Sorry, I couldn't answer that right now.";
     }
 }
-
-// Event Listeners
-document.getElementById('sendBtn').addEventListener('click', sendMessage);
-
-document.getElementById('userInput').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
-    }
-});
 </script>
 </body>
 </html>
