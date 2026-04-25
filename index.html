@@ -16,6 +16,8 @@
             --surface2: #1a1f2e;
             --border: rgba(255,255,255,0.1);
             --accent: #00f5a0;
+            --red: #ff4d4d;
+            --yellow: #ffcc33;
             --text: #f0f2f8;
             --muted: #8a94b0;
             --radius: 16px;
@@ -29,7 +31,10 @@
         }
         .container { max-width: 760px; margin: 0 auto; }
 
-        header { text-align: center; margin-bottom: 2.5rem; }
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
         .logo {
             display: inline-flex;
             align-items: center;
@@ -51,6 +56,7 @@
             letter-spacing: -1.6px;
         }
         .logo h1 span { color: var(--accent); }
+        .tagline { font-size: 16px; color: var(--muted); margin-top: 8px; }
 
         .card {
             background: var(--surface);
@@ -60,6 +66,7 @@
             box-shadow: 0 20px 60px rgba(0,0,0,0.45);
         }
 
+        .input-area { position: relative; }
         textarea {
             width: 100%;
             min-height: 180px;
@@ -68,10 +75,9 @@
             border-radius: 14px;
             padding: 20px;
             font-size: 16px;
-            color: var(--text);           /* Fixed: White text */
+            color: var(--text);
             line-height: 1.6;
         }
-        textarea::placeholder { color: var(--muted); }
         textarea:focus {
             border-color: var(--accent);
             box-shadow: 0 0 0 5px rgba(0, 245, 160, 0.15);
@@ -95,10 +101,12 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            transition: all 0.2s;
         }
         .tool-btn:hover {
             background: var(--accent);
             color: #000;
+            transform: scale(1.1);
         }
 
         .scan-btn {
@@ -114,7 +122,46 @@
             cursor: pointer;
         }
 
-        /* Result */
+        /* Improved Language Buttons */
+        .lang-section {
+            margin-top: 1.8rem;
+        }
+        .lang-section span {
+            font-size: 14px;
+            color: var(--muted);
+            display: block;
+            margin-bottom: 10px;
+        }
+        .lang-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .lang-btn {
+            padding: 10px 22px;
+            font-size: 14px;
+            border-radius: 30px;
+            border: 1px solid var(--border);
+            background: var(--surface2);
+            color: var(--muted);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-weight: 500;
+        }
+        .lang-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+        .lang-btn.active {
+            background: rgba(0, 245, 160, 0.18);
+            border-color: var(--accent);
+            color: var(--accent);
+            box-shadow: 0 0 15px rgba(0, 245, 160, 0.25);
+            font-weight: 600;
+        }
+
+        /* Result Styles */
         .result { display: none; margin-top: 2rem; }
         .verdict-card, .flags-card, .detail-card {
             background: var(--surface);
@@ -134,6 +181,7 @@
         }
         .score-number { font-size: 48px; font-weight: 700; color: var(--text); }
 
+        /* Follow-up */
         .followup-section {
             margin-top: 2.5rem;
             background: var(--surface);
@@ -148,13 +196,13 @@
         .followup-input textarea {
             flex: 1;
             background: var(--surface2);
-            color: var(--text);           /* White text */
+            color: var(--text);
             border: 1px solid var(--border);
             border-radius: 12px;
             padding: 14px;
         }
         .ask-btn {
-            padding: 0 24px;
+            padding: 0 26px;
             background: var(--accent);
             color: #000;
             border: none;
@@ -186,9 +234,9 @@
             </div>
         </div>
 
-        <div style="margin-top:1.5rem;">
-            <span style="font-size:14px;color:var(--muted);">Explain the risk in:</span>
-            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;">
+        <div class="lang-section">
+            <span>Explain the risk in:</span>
+            <div class="lang-row">
                 <button class="lang-btn active" data-lang="English">English</button>
                 <button class="lang-btn" data-lang="Hindi">हिंदी</button>
                 <button class="lang-btn" data-lang="Telugu">తెలుగు</button>
@@ -200,7 +248,7 @@
         <button class="scan-btn" id="scanBtn" onclick="analyze()">🔍 Scan for Phishing</button>
     </div>
 
-    <!-- Result Section -->
+    <!-- Result -->
     <div class="result" id="result">
         <div class="verdict-card" id="verdictCard">
             <div id="scoreCircle" class="score-circle" style="--score: 0">
@@ -241,10 +289,10 @@
 </div>
 
 <script>
-// Voice, Image, Analyze, etc.
 let selectedLang = "English";
 let currentAnalysis = "";
 
+// Language buttons
 document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
@@ -253,7 +301,7 @@ document.querySelectorAll('.lang-btn').forEach(btn => {
     });
 });
 
-// Voice
+// Voice Input
 const micBtn = document.getElementById('micBtn');
 let recognition;
 if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
@@ -278,7 +326,10 @@ imageInput.addEventListener('change', async (e) => {
         const { data } = await worker.recognize(file);
         document.getElementById('msgInput').value = data.text.trim();
         await worker.terminate();
-    } catch(err) {}
+        alert("Text extracted from image!");
+    } catch(err) {
+        alert("Failed to read image clearly.");
+    }
     uploadBtn.textContent = '📸';
 });
 
@@ -295,7 +346,6 @@ async function analyze() {
 
         const r = await res.json();
 
-        // Show result
         const verdict = (r.verdict || 'SUSPICIOUS').toUpperCase();
         const score = Math.min(100, Math.max(0, r.risk_score || 50));
 
@@ -304,8 +354,13 @@ async function analyze() {
         document.getElementById('verdictEmoji').textContent = verdict === 'PHISHING' ? '🚨' : verdict === 'SUSPICIOUS' ? '⚠️' : '✅';
         document.getElementById('verdictTitle').textContent = verdict === 'PHISHING' ? 'Phishing Detected' : verdict === 'SUSPICIOUS' ? 'Suspicious' : 'Looks Safe';
 
-        document.getElementById('flagsList').innerHTML = (r.red_flags || []).map(f => `<div style="margin:6px 0;">• ${f}</div>`).join('');
-        document.getElementById('flagsCard').style.display = (r.red_flags && r.red_flags.length) ? 'block' : 'none';
+        const flagsCard = document.getElementById('flagsCard');
+        if (r.red_flags && r.red_flags.length > 0) {
+            flagsCard.style.display = 'block';
+            document.getElementById('flagsList').innerHTML = r.red_flags.map(f => `<div style="margin:8px 0;">• ${f}</div>`).join('');
+        } else {
+            flagsCard.style.display = 'none';
+        }
 
         document.getElementById('explanationBox').textContent = r.explanation || '';
         document.getElementById('tipBox').textContent = r.safety_tip || '';
@@ -332,14 +387,14 @@ async function askFollowup() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                message: `Original: ${currentAnalysis}\nQuestion: ${q}`,
+                message: `Original message: ${currentAnalysis}\n\nQuestion: ${q}`,
                 language: selectedLang
             })
         });
         const r = await res.json();
-        box.textContent = r.explanation || r.safety_tip || "No clear answer.";
+        box.textContent = r.explanation || "No clear answer received.";
     } catch(e) {
-        box.textContent = "Sorry, couldn't get answer.";
+        box.textContent = "Sorry, couldn't get an answer right now.";
     }
 }
 </script>
