@@ -17,7 +17,6 @@
             --border: rgba(255,255,255,0.1);
             --accent: #00f5a0;
             --red: #ff4d4d;
-            --yellow: #ffcc33;
             --text: #f0f2f8;
             --muted: #8a94b0;
             --radius: 16px;
@@ -31,10 +30,7 @@
         }
         .container { max-width: 760px; margin: 0 auto; }
 
-        header {
-            text-align: center;
-            margin-bottom: 2.5rem;
-        }
+        header { text-align: center; margin-bottom: 2.5rem; }
         .logo {
             display: inline-flex;
             align-items: center;
@@ -56,7 +52,6 @@
             letter-spacing: -1.6px;
         }
         .logo h1 span { color: var(--accent); }
-        .tagline { font-size: 16px; color: var(--muted); margin-top: 8px; }
 
         .card {
             background: var(--surface);
@@ -66,7 +61,6 @@
             box-shadow: 0 20px 60px rgba(0,0,0,0.45);
         }
 
-        .input-area { position: relative; }
         textarea {
             width: 100%;
             min-height: 180px;
@@ -76,7 +70,6 @@
             padding: 20px;
             font-size: 16px;
             color: var(--text);
-            line-height: 1.6;
         }
         textarea:focus {
             border-color: var(--accent);
@@ -101,12 +94,10 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.2s;
         }
         .tool-btn:hover {
             background: var(--accent);
             color: #000;
-            transform: scale(1.1);
         }
 
         .scan-btn {
@@ -118,20 +109,11 @@
             border: none;
             border-radius: 12px;
             font-weight: 700;
-            font-size: 16px;
             cursor: pointer;
         }
 
-        /* Improved Language Buttons */
-        .lang-section {
-            margin-top: 1.8rem;
-        }
-        .lang-section span {
-            font-size: 14px;
-            color: var(--muted);
-            display: block;
-            margin-bottom: 10px;
-        }
+        /* Language Buttons */
+        .lang-section { margin-top: 1.8rem; }
         .lang-row {
             display: flex;
             flex-wrap: wrap;
@@ -145,23 +127,20 @@
             background: var(--surface2);
             color: var(--muted);
             cursor: pointer;
-            transition: all 0.25s ease;
-            font-weight: 500;
+            transition: all 0.25s;
         }
         .lang-btn:hover {
             border-color: var(--accent);
             color: var(--accent);
-            transform: translateY(-2px);
         }
         .lang-btn.active {
             background: rgba(0, 245, 160, 0.18);
             border-color: var(--accent);
             color: var(--accent);
             box-shadow: 0 0 15px rgba(0, 245, 160, 0.25);
-            font-weight: 600;
         }
 
-        /* Result Styles */
+        /* Result */
         .result { display: none; margin-top: 2rem; }
         .verdict-card, .flags-card, .detail-card {
             background: var(--surface);
@@ -179,37 +158,7 @@
             align-items: center;
             justify-content: center;
         }
-        .score-number { font-size: 48px; font-weight: 700; color: var(--text); }
-
-        /* Follow-up */
-        .followup-section {
-            margin-top: 2.5rem;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 2rem;
-        }
-        .followup-input {
-            display: flex;
-            gap: 12px;
-        }
-        .followup-input textarea {
-            flex: 1;
-            background: var(--surface2);
-            color: var(--text);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 14px;
-        }
-        .ask-btn {
-            padding: 0 26px;
-            background: var(--accent);
-            color: #000;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-        }
+        .score-number { font-size: 48px; font-weight: 700; }
     </style>
 </head>
 <body>
@@ -219,7 +168,6 @@
             <div class="logo-icon">🛡️</div>
             <h1>Phish<span>Guard</span></h1>
         </div>
-        <p class="tagline">Multilingual phishing detector for Hindi, Telugu, Tamil & English users</p>
     </header>
 
     <div class="card">
@@ -235,7 +183,7 @@
         </div>
 
         <div class="lang-section">
-            <span>Explain the risk in:</span>
+            <span style="color:var(--muted);">Explain the risk in:</span>
             <div class="lang-row">
                 <button class="lang-btn active" data-lang="English">English</button>
                 <button class="lang-btn" data-lang="Hindi">हिंदी</button>
@@ -248,49 +196,38 @@
         <button class="scan-btn" id="scanBtn" onclick="analyze()">🔍 Scan for Phishing</button>
     </div>
 
-    <!-- Result -->
+    <!-- Result Area -->
     <div class="result" id="result">
         <div class="verdict-card" id="verdictCard">
             <div id="scoreCircle" class="score-circle" style="--score: 0">
                 <div class="score-circle-inner">
                     <div class="score-number" id="scoreNum">0</div>
-                    <div style="font-size:13px;color:var(--muted);">RISK SCORE</div>
+                    <div style="font-size:13px; color:var(--muted);">RISK SCORE</div>
                 </div>
             </div>
-            <div class="verdict-emoji" id="verdictEmoji"></div>
-            <div class="verdict-title" id="verdictTitle"></div>
+            <div class="verdict-emoji" id="verdictEmoji" style="font-size:52px; margin:10px 0;"></div>
+            <div class="verdict-title" id="verdictTitle" style="font-size:26px; font-weight:700;"></div>
         </div>
 
         <div class="flags-card" id="flagsCard" style="display:none;">
             <h3 style="color:var(--red);">🔴 Red Flags Detected</h3>
-            <div id="flagsList" style="color:var(--text);"></div>
+            <div id="flagsList" style="margin-top:10px; line-height:1.7;"></div>
         </div>
 
         <div class="detail-card">
             <h3>📝 Explanation</h3>
-            <div id="explanationBox" style="line-height:1.8; color:var(--text);"></div>
+            <div id="explanationBox" style="margin-top:12px; line-height:1.8; color:var(--text);"></div>
         </div>
 
         <div class="detail-card">
             <h3>🛡️ Safety Tip</h3>
-            <div id="tipBox" style="line-height:1.8; color:var(--text);"></div>
+            <div id="tipBox" style="margin-top:12px; line-height:1.8; color:var(--text);"></div>
         </div>
-    </div>
-
-    <!-- Follow-up Section -->
-    <div class="followup-section" id="followupSection" style="display:none;">
-        <h3>Ask Follow-up Questions</h3>
-        <div class="followup-input">
-            <textarea id="followupInput" placeholder="Why is this phishing? Explain in simple terms..."></textarea>
-            <button class="ask-btn" onclick="askFollowup()">Ask</button>
-        </div>
-        <div id="followupResponse" style="margin-top:1rem; padding:1.2rem; background:var(--surface2); border-radius:12px; min-height:80px; display:none; color:var(--text);"></div>
     </div>
 </div>
 
 <script>
 let selectedLang = "English";
-let currentAnalysis = "";
 
 // Language buttons
 document.querySelectorAll('.lang-btn').forEach(btn => {
@@ -301,41 +238,16 @@ document.querySelectorAll('.lang-btn').forEach(btn => {
     });
 });
 
-// Voice Input
-const micBtn = document.getElementById('micBtn');
-let recognition;
-if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    recognition = new SR();
-    recognition.lang = 'en-IN';
-    recognition.onresult = e => document.getElementById('msgInput').value = e.results[0][0].transcript;
-}
-micBtn.addEventListener('click', () => recognition && recognition.start());
-
-// Image OCR
-const uploadBtn = document.getElementById('uploadBtn');
-const imageInput = document.getElementById('imageInput');
-uploadBtn.addEventListener('click', () => imageInput.click());
-imageInput.addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    uploadBtn.textContent = '⏳';
-    try {
-        const { createWorker } = Tesseract;
-        const worker = await createWorker(['eng','hin','tel','tam']);
-        const { data } = await worker.recognize(file);
-        document.getElementById('msgInput').value = data.text.trim();
-        await worker.terminate();
-        alert("Text extracted from image!");
-    } catch(err) {
-        alert("Failed to read image clearly.");
-    }
-    uploadBtn.textContent = '📸';
-});
-
+// Main Analyze Function
 async function analyze() {
     const msg = document.getElementById('msgInput').value.trim();
-    if (!msg) return alert("Please paste a message");
+    if (!msg) {
+        alert("Please paste a message, URL or email");
+        return;
+    }
+
+    document.getElementById('scanBtn').textContent = "Analyzing...";
+    document.getElementById('scanBtn').disabled = true;
 
     try {
         const res = await fetch('/api/analyze', {
@@ -346,57 +258,49 @@ async function analyze() {
 
         const r = await res.json();
 
+        if (r.error) throw new Error(r.error);
+
+        // Show Result
         const verdict = (r.verdict || 'SUSPICIOUS').toUpperCase();
         const score = Math.min(100, Math.max(0, r.risk_score || 50));
 
         document.getElementById('scoreCircle').style.setProperty('--score', score);
         document.getElementById('scoreNum').textContent = score;
+
         document.getElementById('verdictEmoji').textContent = verdict === 'PHISHING' ? '🚨' : verdict === 'SUSPICIOUS' ? '⚠️' : '✅';
         document.getElementById('verdictTitle').textContent = verdict === 'PHISHING' ? 'Phishing Detected' : verdict === 'SUSPICIOUS' ? 'Suspicious' : 'Looks Safe';
 
+        // Red Flags
         const flagsCard = document.getElementById('flagsCard');
         if (r.red_flags && r.red_flags.length > 0) {
             flagsCard.style.display = 'block';
-            document.getElementById('flagsList').innerHTML = r.red_flags.map(f => `<div style="margin:8px 0;">• ${f}</div>`).join('');
+            document.getElementById('flagsList').innerHTML = r.red_flags.map(f => `<div>• ${f}</div>`).join('');
         } else {
             flagsCard.style.display = 'none';
         }
 
-        document.getElementById('explanationBox').textContent = r.explanation || '';
-        document.getElementById('tipBox').textContent = r.safety_tip || '';
+        document.getElementById('explanationBox').textContent = r.explanation || "No explanation available.";
+        document.getElementById('tipBox').textContent = r.safety_tip || "Be careful with unknown links and never share OTPs.";
 
         document.getElementById('result').style.display = 'block';
-        document.getElementById('followupSection').style.display = 'block';
 
-        currentAnalysis = msg;
     } catch (e) {
-        alert("Analysis failed. Please try again.");
+        alert("Analysis failed. Please check your connection and try again.");
+        console.error(e);
+    } finally {
+        document.getElementById('scanBtn').textContent = "🔍 Scan for Phishing";
+        document.getElementById('scanBtn').disabled = false;
     }
 }
 
-async function askFollowup() {
-    const q = document.getElementById('followupInput').value.trim();
-    if (!q) return;
+// Voice & Image (kept simple)
+document.getElementById('micBtn').addEventListener('click', () => {
+    alert("Voice input is not fully set up in this version. Use keyboard for now.");
+});
 
-    const box = document.getElementById('followupResponse');
-    box.style.display = 'block';
-    box.textContent = "Thinking...";
-
-    try {
-        const res = await fetch('/api/analyze', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                message: `Original message: ${currentAnalysis}\n\nQuestion: ${q}`,
-                language: selectedLang
-            })
-        });
-        const r = await res.json();
-        box.textContent = r.explanation || "No clear answer received.";
-    } catch(e) {
-        box.textContent = "Sorry, couldn't get an answer right now.";
-    }
-}
+document.getElementById('uploadBtn').addEventListener('click', () => {
+    alert("Image upload (OCR) is not fully configured in this version.");
+});
 </script>
 </body>
 </html>
