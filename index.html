@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PhishGuard — PS22</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f1117; --surface: #181c27; --surface2: #1e2335;
+    --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.15);
+    --text: #f0f2f8; --muted: #7a82a0; --accent: #00d49a;
+    --accent-dim: rgba(0,212,154,0.12);
+    --red: #ff5c5c; --red-dim: rgba(255,92,92,0.12);
+    --yellow: #ffb547; --yellow-dim: rgba(255,181,71,0.12);
+    --green: #00d49a; --green-dim: rgba(0,212,154,0.12);
+    --radius: 12px; --radius-sm: 8px;
+  }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; padding: 2rem 1rem 4rem;
+  }
+  .container { width: 100%; max-width: 620px; }
+  header { text-align: center; margin-bottom: 2rem; }
+  .logo { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 0.75rem; }
+  .logo-icon {
+    width: 42px; height: 42px; border-radius: 10px;
+    background: var(--accent-dim); border: 1px solid var(--accent);
+    display: flex; align-items: center; justify-content: center; font-size: 22px;
+  }
+  .logo h1 { font-size: 26px; font-weight: 600; letter-spacing: -0.5px; }
+  .logo h1 span { color: var(--accent); }
+  header p { color: var(--muted); font-size: 14px; line-height: 1.6; }
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1rem;
+  }
+  .card-label { font-size: 12px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+  textarea {
+    width: 100%; min-height: 120px; resize: vertical;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 12px;
+    font-family: 'DM Sans', sans-serif; font-size: 14px;
+    color: var(--text); line-height: 1.6; transition: border 0.2s;
+  }
+  textarea:focus { outline: none; border-color: var(--accent); }
+  textarea::placeholder { color: var(--muted); }
+  .lang-section { margin-top: 14px; }
+  .lang-section > span { font-size: 12px; color: var(--muted); display: block; margin-bottom: 8px; }
+  .lang-row { display: flex; flex-wrap: wrap; gap: 6px; }
+  .lang-btn {
+    font-size: 12px; font-family: 'DM Sans', sans-serif;
+    padding: 5px 14px; border-radius: 20px;
+    border: 1px solid var(--border); background: var(--surface2);
+    color: var(--muted); cursor: pointer; transition: all 0.15s;
+  }
+  .lang-btn:hover { border-color: var(--border2); color: var(--text); }
+  .lang-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+  .examples-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+  .chip {
+    font-size: 12px; font-family: 'DM Sans', sans-serif;
+    padding: 4px 12px; border-radius: 20px;
+    border: 1px dashed var(--border2); background: transparent;
+    color: var(--muted); cursor: pointer; transition: all 0.15s;
+  }
+  .chip:hover { color: var(--text); border-color: var(--border2); }
+  .scan-btn {
+    width: 100%; padding: 14px;
+    font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600;
+    border: none; border-radius: var(--radius-sm); cursor: pointer;
+    background: var(--accent); color: #000;
+    margin-top: 14px; transition: opacity 0.15s, transform 0.1s;
+  }
+  .scan-btn:hover { opacity: 0.9; }
+  .scan-btn:active { transform: scale(0.99); }
+  .scan-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .error-msg { color: var(--red); font-size: 13px; margin-top: 10px; display: none; }
+  .loading {
+    display: none; text-align: center; padding: 2.5rem;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); margin-bottom: 1rem;
+  }
+  .loader {
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 2px solid var(--border2); border-top-color: var(--accent);
+    animation: spin 0.8s linear infinite; margin: 0 auto 12px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading p { font-size: 14px; color: var(--muted); }
+  .result { display: none; }
+  .verdict-card { border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1rem; border: 1px solid; }
+  .verdict-card.safe { background: var(--green-dim); border-color: rgba(0,212,154,0.3); }
+  .verdict-card.suspicious { background: var(--yellow-dim); border-color: rgba(255,181,71,0.3); }
+  .verdict-card.phishing { background: var(--red-dim); border-color: rgba(255,92,92,0.4); }
+  .verdict-top { display: flex; align-items: center; gap: 14px; }
+  .verdict-emoji { font-size: 32px; }
+  .verdict-title { font-size: 20px; font-weight: 600; }
+  .verdict-sub { font-size: 13px; margin-top: 3px; opacity: 0.7; }
+  .safe .verdict-title { color: var(--green); }
+  .suspicious .verdict-title { color: var(--yellow); }
+  .phishing .verdict-title { color: var(--red); }
+  .score-section { margin-top: 1rem; }
+  .score-label { display: flex; justify-content: space-between; font-size: 12px; opacity: 0.7; margin-bottom: 6px; }
+  .score-bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,0.1); overflow: hidden; }
+  .score-fill { height: 100%; border-radius: 3px; transition: width 0.8s cubic-bezier(0.4,0,0.2,1); }
+  .safe .score-fill { background: var(--green); }
+  .suspicious .score-fill { background: var(--yellow); }
+  .phishing .score-fill { background: var(--red); }
+  .detail-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1rem;
+  }
+  .detail-card h3 { font-size: 12px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+  .flags { display: flex; flex-direction: column; gap: 8px; }
+  .flag-item { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; }
+  .flag-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--red); margin-top: 5px; flex-shrink: 0; }
+  .explanation { font-size: 14px; line-height: 1.75; }
+  .tip { font-size: 13px; color: var(--muted); line-height: 1.7; }
+  .reset-btn {
+    width: 100%; padding: 12px;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+    border: 1px solid var(--border2); border-radius: var(--radius-sm);
+    background: transparent; color: var(--muted); cursor: pointer; transition: all 0.15s;
+  }
+  .reset-btn:hover { border-color: var(--accent); color: var(--accent); }
+  footer { text-align: center; margin-top: 3rem; font-size: 12px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="logo">
+      <div class="logo-icon">🛡</div>
+      <h1>Phish<span>Guard</span></h1>
+    </div>
+    <p>Multilingual phishing detector for Indian regional languages</p>
+  </header>
+
+  <div class="card">
+    <div class="card-label">Paste suspicious message, URL, or email</div>
+    <textarea id="msgInput" placeholder="Paste in any language — Hindi, Telugu, Tamil, English..."></textarea>
+    <div class="lang-section">
+      <span>Explain the risk in:</span>
+      <div class="lang-row">
+        <button class="lang-btn active" data-lang="English">English</button>
+        <button class="lang-btn" data-lang="Hindi">हिंदी</button>
+        <button class="lang-btn" data-lang="Telugu">తెలుగు</button>
+        <button class="lang-btn" data-lang="Tamil">தமிழ்</button>
+        <button class="lang-btn" data-lang="the same language as the input message">Auto</button>
+      </div>
+    </div>
+    <div style="margin-top:14px;">
+      <span style="font-size:12px;color:var(--muted);">Try an example:</span>
+      <div class="examples-row">
+        <button class="chip" onclick="setEx(0)">Fake SBI SMS</button>
+        <button class="chip" onclick="setEx(1)">Telugu lottery scam</button>
+        <button class="chip" onclick="setEx(2)">Legit UPI message</button>
+        <button class="chip" onclick="setEx(3)">Fake UIDAI link</button>
+        <button class="chip" onclick="setEx(4)">Hindi OTP fraud</button>
+      </div>
+    </div>
+    <button class="scan-btn" id="scanBtn" onclick="analyze()">🔍 Scan for phishing</button>
+    <div class="error-msg" id="errMsg"></div>
+  </div>
+
+  <div class="loading" id="loading">
+    <div class="loader"></div>
+    <p>Analyzing your message...</p>
+  </div>
+
+  <div class="result" id="result">
+    <div class="verdict-card" id="verdictCard">
+      <div class="verdict-top">
+        <div class="verdict-emoji" id="verdictEmoji"></div>
+        <div>
+          <div class="verdict-title" id="verdictTitle"></div>
+          <div class="verdict-sub" id="verdictSub"></div>
+        </div>
+      </div>
+      <div class="score-section">
+        <div class="score-label"><span>Risk score</span><span id="scoreNum"></span></div>
+        <div class="score-bar"><div class="score-fill" id="scoreFill" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div class="detail-card" id="flagsCard" style="display:none;">
+      <h3>Red flags detected</h3>
+      <div class="flags" id="flagsList"></div>
+    </div>
+    <div class="detail-card">
+      <h3>Explanation</h3>
+      <div class="explanation" id="explanationBox"></div>
+    </div>
+    <div class="detail-card">
+      <h3>Safety tip</h3>
+      <div class="tip" id="tipBox"></div>
+    </div>
+    <button class="reset-btn" onclick="reset()">← Scan another message</button>
+  </div>
+</div>
+<footer>PhishGuard · PS22 Hackathon · Powered by Gemini AI</footer>
+
+<script>
+const examples = [
+  "Dear Customer, Your SBI account has been blocked. Click here to verify KYC immediately: http://sbi-kyc-update.xyz/verify or your account will be permanently closed within 24 hours.",
+  "అభినందనలు! మీరు 50 లక్షల లాటరీ గెలుచుకున్నారు. మీ బహుమతి పొందడానికి ఇప్పుడే క్లిక్ చేయండి: http://lottery-win.tk/claim మరియు మీ ఆధార్ నంబర్ పంపండి.",
+  "Your UPI transaction of Rs. 250 to Swiggy is successful. UPI Ref: 123456789. Balance: Rs. 4,320. -HDFC Bank",
+  "URGENT: Your Aadhaar-linked mobile number will expire today. Update now: http://uidai-update.ml/renew to avoid disconnection.",
+  "आपका OTP है 847291। इसे किसी के साथ साझा न करें। अगर यह आपने नहीं मांगा तो 1800-111-109 पर कॉल करें। -HDFC Bank"
+];
+let selectedLang = "English";
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedLang = btn.dataset.lang;
+  });
+});
+function setEx(i) { document.getElementById('msgInput').value = examples[i]; }
+function reset() {
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('msgInput').value = '';
+  document.getElementById('msgInput').focus();
+}
+async function analyze() {
+  const msg = document.getElementById('msgInput').value.trim();
+  const errEl = document.getElementById('errMsg');
+  errEl.style.display = 'none';
+  if (!msg) { errEl.textContent = 'Please paste a message to analyze.'; errEl.style.display = 'block'; return; }
+  document.getElementById('scanBtn').disabled = true;
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('result').style.display = 'none';
+  try {
+    const res = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: msg, language: selectedLang })
+    });
+    const r = await res.json();
+    if (r.error) throw new Error(r.error);
+    showResult(r);
+  } catch(e) {
+    errEl.textContent = 'Error: ' + e.message;
+    errEl.style.display = 'block';
+  } finally {
+    document.getElementById('scanBtn').disabled = false;
+    document.getElementById('loading').style.display = 'none';
+  }
+}
+function showResult(r) {
+  const v = (r.verdict || 'SUSPICIOUS').toUpperCase();
+  document.getElementById('verdictCard').className = 'verdict-card ' + v.toLowerCase();
+  const emojis = { SAFE:'✅', SUSPICIOUS:'⚠️', PHISHING:'🚨' };
+  const titles = { SAFE:'Looks Safe', SUSPICIOUS:'Suspicious', PHISHING:'Phishing Detected' };
+  const subs = { SAFE:'No significant threats found', SUSPICIOUS:'Proceed with caution', PHISHING:'Do NOT click, reply, or share any info' };
+  document.getElementById('verdictEmoji').textContent = emojis[v] || '❓';
+  document.getElementById('verdictTitle').textContent = titles[v] || v;
+  document.getElementById('verdictSub').textContent = subs[v] || '';
+  const score = Math.min(100, Math.max(0, r.risk_score || 0));
+  document.getElementById('scoreNum').textContent = score + '/100';
+  setTimeout(() => { document.getElementById('scoreFill').style.width = score + '%'; }, 50);
+  const flagsCard = document.getElementById('flagsCard');
+  if (r.red_flags && r.red_flags.length > 0) {
+    flagsCard.style.display = 'block';
+    document.getElementById('flagsList').innerHTML = r.red_flags.map(f =>
+      `<div class="flag-item"><div class="flag-dot"></div><span>${f}</span></div>`).join('');
+  } else { flagsCard.style.display = 'none'; }
+  document.getElementById('explanationBox').textContent = r.explanation || '';
+  document.getElementById('tipBox').textContent = r.safety_tip || '';
+  document.getElementById('result').style.display = 'block';
+  document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+</script>
+</body>
+</html>
