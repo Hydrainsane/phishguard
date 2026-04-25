@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>PhishGuard — PS22</title>
+<title>PhishGuard — Multilingual Phishing Detector</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -12,194 +12,182 @@
     --surface: #12151f;
     --surface2: #1a1f2e;
     --border: rgba(255,255,255,0.08);
-    --border2: rgba(255,255,255,0.15);
-    --text: #f0f2f8;
-    --muted: #8a94b0;
     --accent: #00f5a0;
     --red: #ff4d4d;
     --yellow: #ffcc33;
-    --green: #00f5a0;
+    --text: #f0f2f8;
+    --muted: #8a94b0;
     --radius: 16px;
-    --radius-sm: 10px;
   }
   body {
     background: var(--bg);
     color: var(--text);
     font-family: 'DM Sans', sans-serif;
     min-height: 100vh;
-    padding: 2rem 1rem 4rem;
+    padding: 2.5rem 1rem 5rem;
     line-height: 1.6;
   }
-  .container { width: 100%; max-width: 680px; margin: 0 auto; }
+  .container { width: 100%; max-width: 720px; margin: 0 auto; }
 
   header {
     text-align: center;
-    margin-bottom: 2.5rem;
+    margin-bottom: 3.5rem;
   }
   .logo {
     display: inline-flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 0.5rem;
+    gap: 16px;
+    margin-bottom: 12px;
   }
   .logo-icon {
-    width: 52px; height: 52px;
-    background: linear-gradient(135deg, #00f5a0, #00b386);
-    border-radius: 14px;
+    width: 62px; height: 62px;
+    background: linear-gradient(135deg, #00f5a0, #00c48a);
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 28px;
-    box-shadow: 0 0 20px rgba(0, 245, 160, 0.3);
+    font-size: 34px;
+    box-shadow: 0 0 30px rgba(0, 245, 160, 0.5);
+    transition: transform 0.3s;
+  }
+  .logo:hover .logo-icon {
+    transform: scale(1.08);
   }
   .logo h1 {
-    font-size: 32px;
+    font-size: 38px;
     font-weight: 700;
-    letter-spacing: -1px;
+    letter-spacing: -1.5px;
   }
   .logo h1 span { color: var(--accent); }
-  .ps22-badge {
+
+  .tagline {
+    font-size: 16px;
+    color: var(--muted);
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  .grok-badge {
     display: inline-block;
-    background: rgba(0, 245, 160, 0.15);
+    margin-top: 16px;
+    padding: 6px 14px;
+    background: rgba(0, 245, 160, 0.1);
     color: var(--accent);
-    font-size: 11px;
-    font-weight: 600;
-    padding: 4px 12px;
+    font-size: 12px;
     border-radius: 20px;
     border: 1px solid rgba(0, 245, 160, 0.3);
-    margin-top: 8px;
   }
 
   .card {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 2rem;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    padding: 2.5rem;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
   }
 
   .input-label {
-    font-size: 13px;
+    font-size: 13.5px;
     font-weight: 600;
     color: var(--muted);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 12px;
+    letter-spacing: 0.8px;
+    margin-bottom: 14px;
   }
 
   textarea {
     width: 100%;
-    min-height: 160px;
+    min-height: 180px;
     background: var(--surface2);
     border: 2px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 16px;
-    font-size: 15px;
+    border-radius: 14px;
+    padding: 20px;
+    font-size: 16px;
     color: var(--text);
     resize: vertical;
-    transition: all 0.2s;
+    transition: all 0.3s ease;
   }
   textarea:focus {
-    outline: none;
     border-color: var(--accent);
-    box-shadow: 0 0 0 4px rgba(0, 245, 160, 0.1);
+    box-shadow: 0 0 0 5px rgba(0, 245, 160, 0.15);
   }
 
-  .lang-section {
-    margin-top: 1.25rem;
+  .lang-section, .examples {
+    margin-top: 1.8rem;
   }
-  .lang-section span {
-    font-size: 13px;
+  .lang-section span, .examples span {
+    font-size: 14px;
     color: var(--muted);
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     display: block;
   }
-  .lang-row {
+  .lang-row, .examples-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 10px;
   }
-  .lang-btn {
-    padding: 8px 16px;
-    font-size: 13px;
+  .lang-btn, .chip {
+    padding: 10px 20px;
+    font-size: 14px;
     border-radius: 30px;
     border: 1px solid var(--border);
     background: var(--surface2);
     color: var(--muted);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.25s;
   }
-  .lang-btn:hover { border-color: var(--accent); color: var(--text); }
+  .lang-btn:hover, .chip:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translateY(-1px);
+  }
   .lang-btn.active {
-    background: rgba(0, 245, 160, 0.15);
+    background: rgba(0, 245, 160, 0.18);
     border-color: var(--accent);
     color: var(--accent);
-    font-weight: 500;
-  }
-
-  .examples {
-    margin-top: 1.25rem;
-  }
-  .examples span {
-    font-size: 13px;
-    color: var(--muted);
-    margin-bottom: 10px;
-    display: block;
-  }
-  .examples-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  .chip {
-    padding: 8px 16px;
-    font-size: 13px;
-    border: 1px dashed var(--border2);
-    background: transparent;
-    border-radius: 30px;
-    color: var(--muted);
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .chip:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: rgba(0, 245, 160, 0.08);
+    font-weight: 600;
   }
 
   .scan-btn {
     width: 100%;
-    margin-top: 1.5rem;
-    padding: 16px;
-    font-size: 16px;
-    font-weight: 600;
-    background: linear-gradient(90deg, #00f5a0, #00c48a);
+    margin-top: 2.2rem;
+    padding: 18px;
+    font-size: 17px;
+    font-weight: 700;
+    background: linear-gradient(90deg, #00f5a0, #00d49a);
     color: #000;
     border: none;
-    border-radius: var(--radius-sm);
+    border-radius: 14px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.3s;
   }
-  .scan-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0, 245, 160, 0.4); }
-  .scan-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  .scan-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(0, 245, 160, 0.5);
+  }
+  .scan-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+  }
 
   /* Loading */
   .loading {
     display: none;
     text-align: center;
-    padding: 3rem 2rem;
+    padding: 4rem 2rem;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    margin: 2rem 0;
+    margin: 2.5rem 0;
   }
   .loader {
-    width: 48px; height: 48px;
-    border: 4px solid rgba(0, 245, 160, 0.2);
-    border-top: 4px solid var(--accent);
+    width: 56px; height: 56px;
+    border: 5px solid rgba(0, 245, 160, 0.2);
+    border-top-color: var(--accent);
     border-radius: 50%;
-    animation: spin 0.9s linear infinite;
-    margin: 0 auto 1rem;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1.5rem;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -207,35 +195,29 @@
   .result { display: none; }
   .verdict-card {
     border-radius: var(--radius);
-    padding: 2rem;
+    padding: 2.5rem 2rem;
     text-align: center;
-    border: 2px solid;
-    margin-bottom: 1.5rem;
-    position: relative;
-    overflow: hidden;
+    border: 2px solid transparent;
+    background: var(--surface);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    margin-bottom: 1.8rem;
   }
-  .verdict-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; height: 4px;
-  }
-  .verdict-card.safe::before { background: var(--green); }
-  .verdict-card.suspicious::before { background: var(--yellow); }
-  .verdict-card.phishing::before { background: var(--red); }
+  .verdict-card.safe { border-color: rgba(0,245,160,0.5); }
+  .verdict-card.suspicious { border-color: rgba(255,204,51,0.5); }
+  .verdict-card.phishing { border-color: rgba(255,77,77,0.6); }
 
   .score-circle {
-    width: 140px;
-    height: 140px;
+    width: 160px; height: 160px;
+    margin: 0 auto 2rem;
     border-radius: 50%;
-    margin: 0 auto 1.5rem;
-    position: relative;
-    background: conic-gradient(var(--accent) 0deg, var(--accent) calc(var(--score) * 3.6deg), #333 calc(var(--score) * 3.6deg));
+    background: conic-gradient(var(--accent) 0deg, var(--accent) calc(var(--score) * 3.6deg), #1f2538 calc(var(--score) * 3.6deg));
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 0 40px rgba(0, 245, 160, 0.3);
   }
   .score-circle-inner {
-    width: 110px; height: 110px;
+    width: 126px; height: 126px;
     background: var(--surface);
     border-radius: 50%;
     display: flex;
@@ -244,86 +226,77 @@
     justify-content: center;
   }
   .score-number {
-    font-size: 42px;
+    font-size: 52px;
     font-weight: 700;
     line-height: 1;
   }
-  .score-label { font-size: 13px; color: var(--muted); }
+  .score-label { font-size: 14px; color: var(--muted); margin-top: 4px; }
 
-  .verdict-emoji { font-size: 48px; margin-bottom: 12px; }
-  .verdict-title { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
-  .verdict-sub { font-size: 15px; color: var(--muted); }
+  .verdict-emoji { font-size: 56px; margin-bottom: 12px; }
+  .verdict-title { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+  .verdict-sub { font-size: 16px; color: var(--muted); }
 
-  .flags-card {
+  .flags-card, .detail-card {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 1.75rem;
-    margin-bottom: 1.25rem;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
   }
-  .flags-card h3 {
+  .flags-card h3, .detail-card h3 {
     color: var(--muted);
-    font-size: 13px;
+    font-size: 14px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 1rem;
+    letter-spacing: 0.8px;
+    margin-bottom: 1.2rem;
   }
   .flag-item {
     display: flex;
     align-items: flex-start;
-    gap: 12px;
-    padding: 10px 0;
+    gap: 14px;
+    padding: 12px 0;
     border-top: 1px solid var(--border);
-    font-size: 14.5px;
+    font-size: 15px;
   }
   .flag-item:first-child { border-top: none; }
 
-  .detail-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.75rem;
-    margin-bottom: 1.25rem;
-  }
-  .detail-card h3 {
-    color: var(--muted);
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 12px;
+  .detail-card div {
+    font-size: 15.5px;
+    line-height: 1.85;
   }
 
+  .action-buttons {
+    display: flex;
+    gap: 14px;
+    margin-top: 2rem;
+  }
+  .copy-btn, .reset-btn {
+    flex: 1;
+    padding: 15px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s;
+  }
   .copy-btn {
-    margin-top: 1rem;
-    padding: 10px 20px;
     background: transparent;
-    border: 1px solid var(--accent);
+    border: 2px solid var(--accent);
     color: var(--accent);
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    font-weight: 500;
   }
-
   .reset-btn {
-    width: 100%;
-    padding: 14px;
     background: transparent;
-    border: 1px solid var(--border2);
+    border: 2px solid var(--border);
     color: var(--muted);
-    border-radius: var(--radius-sm);
-    font-weight: 500;
-    cursor: pointer;
   }
-  .reset-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
+  .reset-btn:hover, .copy-btn:hover {
+    transform: translateY(-2px);
   }
 
   footer {
     text-align: center;
-    margin-top: 4rem;
+    margin-top: 6rem;
     font-size: 13px;
-    color: var(--muted);
+    color: #555;
   }
 </style>
 </head>
@@ -334,15 +307,13 @@
       <div class="logo-icon">🛡️</div>
       <h1>Phish<span>Guard</span></h1>
     </div>
-    <div class="ps22-badge">PS22 • Innovative Category</div>
-    <p style="margin-top: 12px; color: var(--muted); max-width: 460px; margin-left: auto; margin-right: auto;">
-      Multilingual phishing detector for Hindi, Telugu, Tamil & English users
-    </p>
+    <p class="tagline">Advanced multilingual phishing detector for Hindi, Telugu, Tamil & English users</p>
+    <div class="grok-badge">Powered by Grok AI</div>
   </header>
 
   <div class="card">
     <div class="input-label">Paste suspicious message, URL, or email</div>
-    <textarea id="msgInput" placeholder="Paste anything in English, Hindi, Telugu, Tamil..."></textarea>
+    <textarea id="msgInput" placeholder="Paste in any language — English, हिंदी, తెలుగు, தமிழ్..."></textarea>
 
     <div class="lang-section">
       <span>Explain the risk in:</span>
@@ -367,13 +338,13 @@
     </div>
 
     <button class="scan-btn" id="scanBtn" onclick="analyze()">🔍 Scan for Phishing</button>
-    <div class="error-msg" id="errMsg" style="color:#ff4d4d; font-size:14px; margin-top:12px; display:none;"></div>
+    <div id="errMsg" style="color:#ff4d4d; font-size:14.5px; margin-top:16px; display:none; text-align:center;"></div>
   </div>
 
   <!-- Loading -->
   <div class="loading" id="loading">
     <div class="loader"></div>
-    <p>Analyzing with Grok AI • Checking multilingual patterns...</p>
+    <p>Analyzing message with Grok AI...<br>Checking multilingual phishing patterns</p>
   </div>
 
   <!-- Result -->
@@ -382,40 +353,37 @@
       <div id="scoreCircle" class="score-circle" style="--score: 0">
         <div class="score-circle-inner">
           <div class="score-number" id="scoreNum">0</div>
-          <div class="score-label">Risk Score</div>
+          <div class="score-label">RISK SCORE</div>
         </div>
       </div>
-
       <div class="verdict-emoji" id="verdictEmoji"></div>
       <div class="verdict-title" id="verdictTitle"></div>
       <div class="verdict-sub" id="verdictSub"></div>
     </div>
 
-    <div class="flags-card" id="flagsCard" style="display: none;">
-      <h3>🔴 Red Flags Detected</h3>
-      <div class="flags" id="flagsList"></div>
+    <div class="flags-card" id="flagsCard" style="display:none;">
+      <h3>🔴 RED FLAGS DETECTED</h3>
+      <div id="flagsList"></div>
     </div>
 
     <div class="detail-card">
-      <h3>📝 AI Explanation</h3>
-      <div class="explanation" id="explanationBox" style="font-size:15px; line-height:1.75;"></div>
+      <h3>📝 EXPLANATION</h3>
+      <div id="explanationBox"></div>
     </div>
 
     <div class="detail-card">
-      <h3>🛡️ Safety Tip</h3>
-      <div class="tip" id="tipBox" style="font-size:15px; line-height:1.75;"></div>
+      <h3>🛡️ SAFETY TIP</h3>
+      <div id="tipBox"></div>
     </div>
 
-    <div style="display: flex; gap: 12px; margin-top: 1rem;">
-      <button class="copy-btn" onclick="copyReport()" style="flex:1">📋 Copy Report</button>
-      <button class="reset-btn" onclick="reset()" style="flex:1">Scan Another Message</button>
+    <div class="action-buttons">
+      <button class="copy-btn" onclick="copyReport()">📋 Copy Full Report</button>
+      <button class="reset-btn" onclick="reset()">Scan Another Message</button>
     </div>
   </div>
 </div>
 
-<footer>
-  PhishGuard • PS22 Hackathon • Powered by Grok API
-</footer>
+<footer>PhishGuard</footer>
 
 <script>
 const examples = [
@@ -473,7 +441,7 @@ async function analyze() {
 
     showResult(r);
   } catch (e) {
-    errEl.textContent = 'Analysis failed: ' + e.message;
+    errEl.textContent = 'Analysis failed. Please try again.';
     errEl.style.display = 'block';
   } finally {
     document.getElementById('scanBtn').disabled = false;
@@ -485,31 +453,35 @@ function showResult(r) {
   const verdict = (r.verdict || 'SUSPICIOUS').toUpperCase();
   const score = Math.min(100, Math.max(0, r.risk_score || 50));
 
-  // Verdict card styling
   const card = document.getElementById('verdictCard');
   card.className = `verdict-card ${verdict.toLowerCase()}`;
 
-  // Circular score
   const circle = document.getElementById('scoreCircle');
   circle.style.setProperty('--score', score);
   document.getElementById('scoreNum').textContent = score;
 
-  // Emoji & Title
   const emojis = { SAFE: '✅', SUSPICIOUS: '⚠️', PHISHING: '🚨' };
-  const titles = { SAFE: 'Safe to Proceed', SUSPICIOUS: 'Suspicious Activity', PHISHING: 'High Risk - Phishing Detected' };
-  const subs = { SAFE: 'No major red flags found', SUSPICIOUS: 'Exercise caution before clicking or sharing', PHISHING: 'Do not click any links or share information' };
+  const titles = { 
+    SAFE: 'Safe to Proceed', 
+    SUSPICIOUS: 'Suspicious Activity', 
+    PHISHING: 'Phishing Detected' 
+  };
+  const subs = { 
+    SAFE: 'No major red flags found', 
+    SUSPICIOUS: 'Exercise caution before clicking or sharing', 
+    PHISHING: 'Do not click any links or share information' 
+  };
 
   document.getElementById('verdictEmoji').textContent = emojis[verdict] || '⚠️';
   document.getElementById('verdictTitle').textContent = titles[verdict] || verdict;
   document.getElementById('verdictSub').textContent = subs[verdict] || '';
 
-  // Red flags
   const flagsCard = document.getElementById('flagsCard');
   if (r.red_flags && r.red_flags.length > 0) {
     flagsCard.style.display = 'block';
     document.getElementById('flagsList').innerHTML = r.red_flags.map(flag => `
       <div class="flag-item">
-        <span style="color:#ff4d4d; font-size:18px;">●</span>
+        <span style="color:#ff4d4d; font-size:20px; flex-shrink:0;">●</span>
         <span>${flag}</span>
       </div>
     `).join('');
@@ -517,11 +489,9 @@ function showResult(r) {
     flagsCard.style.display = 'none';
   }
 
-  // Explanation & Tip
-  document.getElementById('explanationBox').textContent = r.explanation || 'No explanation provided.';
-  document.getElementById('tipBox').textContent = r.safety_tip || 'Stay safe online.';
+  document.getElementById('explanationBox').textContent = r.explanation || '';
+  document.getElementById('tipBox').textContent = r.safety_tip || '';
 
-  // Show result
   document.getElementById('result').style.display = 'block';
   document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
 }
@@ -529,13 +499,13 @@ function showResult(r) {
 function copyReport() {
   const explanation = document.getElementById('explanationBox').textContent;
   const tip = document.getElementById('tipBox').textContent;
-  const text = `PhishGuard Analysis Report\n\nExplanation:\n${explanation}\n\nSafety Tip:\n${tip}`;
+  const text = `PhishGuard Analysis Report\n\nRisk Score: ${document.getElementById('scoreNum').textContent}\nVerdict: ${document.getElementById('verdictTitle').textContent}\n\nExplanation:\n${explanation}\n\nSafety Tip:\n${tip}`;
   
   navigator.clipboard.writeText(text).then(() => {
     const btn = event.currentTarget;
-    const original = btn.textContent;
+    const originalText = btn.textContent;
     btn.textContent = '✅ Copied!';
-    setTimeout(() => btn.textContent = original, 2000);
+    setTimeout(() => btn.textContent = originalText, 2000);
   });
 }
 </script>
