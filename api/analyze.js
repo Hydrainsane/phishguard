@@ -8,34 +8,34 @@ export default async function handler(req, res) {
 
   const { message, language = 'English' } = req.body;
 
-  if (!message || message.trim().length < 5) {
-    return res.status(400).json({ error: 'Please provide a valid message' });
+  if (!message || message.trim().length < 10) {
+    return res.status(400).json({ error: 'Please provide a valid message to analyze' });
   }
 
-  const prompt = `You are PhishGuard, an expert cybersecurity assistant specialized in Indian regional language phishing detection.
+  const prompt = `You are PhishGuard, an expert cybersecurity AI for Indian users.
 
-User message:
+Message to analyze:
 """
 ${message}
 """
 
-Analyze this carefully for phishing. Consider urgency, suspicious links, requests for OTP/Aadhaar/password, bank/government impersonation, lottery scams, etc.
+Analyze this message for phishing signs common in India (urgency, fake bank messages, OTP requests, suspicious links, lottery scams, Aadhaar/PAN fraud, etc.).
 
-Respond in **valid JSON only** with this exact structure:
+Respond **strictly in valid JSON only** (no extra text):
 
 {
-  "verdict": "SAFE" | "SUSPICIOUS" | "PHISHING",
-  "risk_score": number (0-100),
-  "red_flags": ["short clear flag 1", "short clear flag 2"],
-  "explanation": "Clear, easy-to-understand explanation in ${language} language. Use simple words suitable for normal users.",
-  "safety_tip": "One practical, actionable safety advice in ${language} language."
+  "verdict": "SAFE" or "SUSPICIOUS" or "PHISHING",
+  "risk_score": number between 0 and 100,
+  "red_flags": ["flag 1", "flag 2", ...]  // maximum 5 short flags
+  "explanation": "Clear explanation in ${language} language. Use simple, easy-to-understand words.",
+  "safety_tip": "One useful safety advice in ${language} language."
 }
 
-Rules:
-- If the user is asking a follow-up question (like "why", "explain", "is it safe", "tell me more"), give a helpful, direct answer while still referencing the original message.
-- Keep explanation natural and culturally appropriate for Indian users.
-- Be honest and educational.
-- Never hallucinate links or facts.`;
+Important instructions:
+- Always reply in the language requested (${language}).
+- If the user asks a follow-up question, answer it directly while referring to the original message.
+- Keep explanations natural and helpful for normal Indian users.
+- Do not use technical jargon unless necessary.`;
 
   try {
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -49,12 +49,12 @@ Rules:
         messages: [
           { 
             role: 'system', 
-            content: 'You are a precise JSON-only assistant. Always respond with valid JSON and nothing else.' 
+            content: 'You are a helpful assistant that always responds with valid JSON only. Never add extra text.' 
           },
           { role: 'user', content: prompt }
         ],
-        temperature: 0.15,
-        max_tokens: 1200,
+        temperature: 0.1,
+        max_tokens: 1100,
         response_format: { type: "json_object" }
       })
     });
@@ -68,29 +68,25 @@ Rules:
     let content = data.choices?.[0]?.message?.content || '{}';
     content = content.replace(/```json|```/g, '').trim();
 
-    let result;
-    try {
-      result = JSON.parse(content);
-    } catch (e) {
-      throw new Error("Failed to parse AI response");
-    }
+    let result = JSON.parse(content);
 
-    // Safe defaults
+    // Ensure safe output
     const safeResult = {
-      verdict: ['SAFE', 'SUSPICIOUS', 'PHISHING'].includes(result.verdict) ? result.verdict : 'SUSPICIOUS',
-      risk_score: Math.max(0, Math.min(100, parseInt(result.risk_score) || 60)),
-      red_flags: Array.isArray(result.red_flags) ? result.red_flags.slice(0, 6) : [],
-      explanation: result.explanation || "I analyzed the message. Please try rephrasing your question.",
-      safety_tip: result.safety_tip || "Never share OTPs or click suspicious links. Verify directly from official apps/websites."
+      verdict: ['SAFE', 'SUSPICIOUS', 'PHISHING'].includes(result.verdict?.toUpperCase()) 
+        ? result.verdict.toUpperCase() 
+        : 'SUSPICIOUS',
+      risk_score: Math.max(0, Math.min(100, parseInt(result.risk_score) || 50)),
+      red_flags: Array.isArray(result.red_flags) ? result.red_flags.slice(0, 5) : [],
+      explanation: result.explanation || "Unable to generate explanation. Please try again.",
+      safety_tip: result.safety_tip || "Never share your OTP or click on suspicious links."
     };
 
     res.status(200).json(safeResult);
 
   } catch (error) {
-    console.error("Backend error:", error);
+    console.error("Analysis Error:", error);
     res.status(500).json({ 
-      error: "Analysis failed. Please try again.",
-      details: error.message 
+      error: "Failed to analyze the message. Please try again." 
     });
   }
 }
