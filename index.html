@@ -5,22 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>PhishGuard — Multilingual Phishing Detector</title>
     
-    <!-- Favicon (Logo in browser tab) -->
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%2300f5a0'/%3E%3Ctext x='50' y='68' font-size='55' text-anchor='middle' fill='%23000'%3E🛡️%3C/text%3E%3C/svg%3E" type="image/svg+xml">
-    
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@v5.0.5/dist/tesseract.min.js"></script>
     
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
             --bg: #0a0c14;
             --surface: #12151f;
             --surface2: #1a1f2e;
             --border: rgba(255,255,255,0.08);
             --accent: #00f5a0;
-            --red: #ff4d4d;
-            --yellow: #ffcc33;
             --text: #f0f2f8;
             --muted: #8a94b0;
             --radius: 16px;
@@ -30,22 +25,21 @@
             color: var(--text);
             font-family: 'DM Sans', sans-serif;
             min-height: 100vh;
-            padding: 3rem 1rem 5rem;
+            padding: 2rem 1rem;
         }
-        .container { width: 100%; max-width: 720px; margin: 0 auto; }
+        .container { max-width: 760px; margin: 0 auto; }
 
         header {
             text-align: center;
-            margin-bottom: 3.5rem;
+            margin-bottom: 2rem;
         }
         .logo {
             display: inline-flex;
             align-items: center;
             gap: 16px;
-            margin-bottom: 12px;
         }
         .logo-icon {
-            width: 68px; height: 68px;
+            width: 66px; height: 66px;
             background: linear-gradient(135deg, #00f5a0, #00c48a);
             border-radius: 18px;
             display: flex;
@@ -55,57 +49,81 @@
             box-shadow: 0 0 40px rgba(0, 245, 160, 0.5);
         }
         .logo h1 {
-            font-size: 40px;
+            font-size: 39px;
             font-weight: 700;
-            letter-spacing: -1.8px;
+            letter-spacing: -1.6px;
         }
         .logo h1 span { color: var(--accent); }
 
-        .tagline {
-            font-size: 16.5px;
-            color: var(--muted);
-            max-width: 520px;
-            margin: 0 auto;
-            font-weight: 500;
-        }
-
-        .card {
+        .chat-container {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 2.8rem;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+            height: 72vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1.8rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 15px 20px;
+            border-radius: 18px;
+            line-height: 1.65;
+            font-size: 15.5px;
+        }
+        .user-message {
+            align-self: flex-end;
+            background: var(--accent);
+            color: #000;
+            border-bottom-right-radius: 6px;
+        }
+        .ai-message {
+            align-self: flex-start;
+            background: var(--surface2);
+            border: 1px solid var(--border);
         }
 
         .input-area {
-            position: relative;
+            padding: 1.2rem;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
         }
         textarea {
-            width: 100%;
-            min-height: 190px;
+            flex: 1;
+            min-height: 54px;
+            max-height: 140px;
             background: var(--surface2);
-            border: 2px solid var(--border);
+            border: 1px solid var(--border);
             border-radius: 14px;
-            padding: 22px;
-            font-size: 16px;
-            color: var(--text);
-            resize: vertical;
-            transition: all 0.3s;
+            padding: 16px 18px;
+            font-size: 15.5px;
+            resize: none;
         }
         textarea:focus {
+            outline: none;
             border-color: var(--accent);
-            box-shadow: 0 0 0 5px rgba(0, 245, 160, 0.15);
         }
 
         .input-tools {
-            position: absolute;
-            bottom: 14px;
-            right: 14px;
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
         .tool-btn {
-            width: 46px; height: 46px;
+            width: 48px; height: 48px;
             border-radius: 50%;
             background: var(--surface2);
             border: 1px solid var(--border);
@@ -115,184 +133,22 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.25s;
+            transition: all 0.2s;
         }
         .tool-btn:hover {
             background: var(--accent);
             color: #000;
-            transform: scale(1.12);
-        }
-        .tool-btn:active { transform: scale(0.95); }
-
-        .lang-section, .examples {
-            margin-top: 2rem;
-        }
-        .lang-section span, .examples span {
-            font-size: 14px;
-            color: var(--muted);
-            margin-bottom: 12px;
-            display: block;
-        }
-        .lang-row, .examples-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .lang-btn, .chip {
-            padding: 10px 20px;
-            font-size: 14px;
-            border-radius: 30px;
-            border: 1px solid var(--border);
-            background: var(--surface2);
-            color: var(--muted);
-            cursor: pointer;
-            transition: all 0.25s;
-        }
-        .lang-btn:hover, .chip:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-            transform: translateY(-1px);
-        }
-        .lang-btn.active {
-            background: rgba(0, 245, 160, 0.18);
-            border-color: var(--accent);
-            color: var(--accent);
-            font-weight: 600;
+            transform: scale(1.1);
         }
 
-        .scan-btn {
-            width: 100%;
-            margin-top: 2.5rem;
-            padding: 18px;
-            font-size: 17px;
-            font-weight: 700;
+        .send-btn {
             background: linear-gradient(90deg, #00f5a0, #00d49a);
             color: #000;
             border: none;
+            padding: 0 26px;
             border-radius: 14px;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s;
-        }
-        .scan-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(0, 245, 160, 0.5);
-        }
-
-        /* Loading */
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 4.5rem 2rem;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            margin: 2.5rem 0;
-        }
-        .loader {
-            width: 58px; height: 58px;
-            border: 5px solid rgba(0, 245, 160, 0.2);
-            border-top-color: var(--accent);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 1.5rem;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* Result */
-        .result { display: none; }
-        .verdict-card {
-            border-radius: var(--radius);
-            padding: 2.8rem 2rem;
-            text-align: center;
-            border: 2px solid transparent;
-            background: var(--surface);
-            box-shadow: 0 15px 50px rgba(0,0,0,0.35);
-            margin-bottom: 2rem;
-        }
-        .verdict-card.safe { border-color: rgba(0,245,160,0.5); }
-        .verdict-card.suspicious { border-color: rgba(255,204,51,0.5); }
-        .verdict-card.phishing { border-color: rgba(255,77,77,0.6); }
-
-        .score-circle {
-            width: 168px; height: 168px;
-            margin: 0 auto 2.2rem;
-            border-radius: 50%;
-            background: conic-gradient(var(--accent) 0deg, var(--accent) calc(var(--score) * 3.6deg), #1f2538 calc(var(--score) * 3.6deg));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 45px rgba(0, 245, 160, 0.35);
-        }
-        .score-circle-inner {
-            width: 130px; height: 130px;
-            background: var(--surface);
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        .score-number { font-size: 54px; font-weight: 700; line-height: 1; }
-        .score-label { font-size: 14px; color: var(--muted); margin-top: 6px; }
-
-        .verdict-emoji { font-size: 58px; margin-bottom: 14px; }
-        .verdict-title { font-size: 29px; font-weight: 700; margin-bottom: 10px; }
-        .verdict-sub { font-size: 16.5px; color: var(--muted); }
-
-        .flags-card, .detail-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 2.2rem;
-            margin-bottom: 1.6rem;
-        }
-        .flags-card h3, .detail-card h3 {
-            color: var(--muted);
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            margin-bottom: 1.3rem;
-        }
-        .flag-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 14px;
-            padding: 13px 0;
-            border-top: 1px solid var(--border);
-            font-size: 15.2px;
-        }
-        .flag-item:first-child { border-top: none; }
-
-        .detail-card div {
-            font-size: 15.8px;
-            line-height: 1.85;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 16px;
-            margin-top: 2.2rem;
-        }
-        .copy-btn, .reset-btn {
-            flex: 1;
-            padding: 16px;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.25s;
-        }
-        .copy-btn {
-            background: transparent;
-            border: 2px solid var(--accent);
-            color: var(--accent);
-        }
-        .reset-btn {
-            background: transparent;
-            border: 2px solid var(--border);
-            color: var(--muted);
-        }
-        .reset-btn:hover, .copy-btn:hover {
-            transform: translateY(-2px);
         }
     </style>
 </head>
@@ -303,149 +159,72 @@
             <div class="logo-icon">🛡️</div>
             <h1>Phish<span>Guard</span></h1>
         </div>
-        <p class="tagline">Multilingual phishing detector for Hindi, Telugu, Tamil & English users</p>
     </header>
 
-    <div class="card">
-        <div class="input-label">Paste suspicious message, URL, or email</div>
-        
+    <div class="chat-container">
+        <div class="chat-messages" id="chatMessages">
+            <div class="ai-message message">
+                Hi! I'm PhishGuard.<br><br>
+                Send any suspicious message, email, URL, or upload a screenshot.<br>
+                After analysis, you can ask follow-up questions like:<br>
+                • "Why is this phishing?"<br>
+                • "Explain in simple Hindi"<br>
+                • "Is the link safe?"
+            </div>
+        </div>
+
         <div class="input-area">
-            <textarea id="msgInput" placeholder="Paste text here or use microphone / upload image below..."></textarea>
-            
             <div class="input-tools">
                 <button class="tool-btn" id="micBtn" title="Voice Input">🎤</button>
                 <button class="tool-btn" id="uploadBtn" title="Upload Screenshot">📸</button>
                 <input type="file" id="imageInput" accept="image/*" style="display:none;">
             </div>
-        </div>
-
-        <div class="lang-section">
-            <span>Explain the risk in:</span>
-            <div class="lang-row">
-                <button class="lang-btn active" data-lang="English">English</button>
-                <button class="lang-btn" data-lang="Hindi">हिंदी</button>
-                <button class="lang-btn" data-lang="Telugu">తెలుగు</button>
-                <button class="lang-btn" data-lang="Tamil">தமிழ்</button>
-                <button class="lang-btn" data-lang="the same language as the input message">Auto</button>
-            </div>
-        </div>
-
-        <div class="examples">
-            <span>Try an example:</span>
-            <div class="examples-row">
-                <button class="chip" onclick="setEx(0)">Fake SBI SMS</button>
-                <button class="chip" onclick="setEx(1)">Telugu Lottery Scam</button>
-                <button class="chip" onclick="setEx(2)">Legit UPI Message</button>
-                <button class="chip" onclick="setEx(3)">Fake UIDAI Link</button>
-                <button class="chip" onclick="setEx(4)">Hindi OTP Fraud</button>
-            </div>
-        </div>
-
-        <button class="scan-btn" id="scanBtn" onclick="analyze()">🔍 Scan for Phishing</button>
-        <div id="errMsg" style="color:#ff4d4d; font-size:14.5px; margin-top:16px; display:none; text-align:center;"></div>
-    </div>
-
-    <!-- Loading -->
-    <div class="loading" id="loading">
-        <div class="loader"></div>
-        <p>Analyzing with AI • Detecting multilingual phishing patterns...</p>
-    </div>
-
-    <!-- Result -->
-    <div class="result" id="result">
-        <div class="verdict-card" id="verdictCard">
-            <div id="scoreCircle" class="score-circle" style="--score: 0">
-                <div class="score-circle-inner">
-                    <div class="score-number" id="scoreNum">0</div>
-                    <div class="score-label">RISK SCORE</div>
-                </div>
-            </div>
-            <div class="verdict-emoji" id="verdictEmoji"></div>
-            <div class="verdict-title" id="verdictTitle"></div>
-            <div class="verdict-sub" id="verdictSub"></div>
-        </div>
-
-        <div class="flags-card" id="flagsCard" style="display:none;">
-            <h3>🔴 RED FLAGS DETECTED</h3>
-            <div id="flagsList"></div>
-        </div>
-
-        <div class="detail-card">
-            <h3>📝 EXPLANATION</h3>
-            <div id="explanationBox"></div>
-        </div>
-
-        <div class="detail-card">
-            <h3>🛡️ SAFETY TIP</h3>
-            <div id="tipBox"></div>
-        </div>
-
-        <div class="action-buttons">
-            <button class="copy-btn" onclick="copyReport()">📋 Copy Full Report</button>
-            <button class="reset-btn" onclick="reset()">Scan Another Message</button>
+            <textarea id="userInput" placeholder="Paste message or ask follow-up question..." rows="1"></textarea>
+            <button class="send-btn" id="sendBtn">Send</button>
         </div>
     </div>
 </div>
 
 <script>
 const examples = [
-    "Dear Customer, Your SBI account has been blocked. Click here to verify KYC immediately: http://sbi-kyc-update.xyz/verify or your account will be permanently closed within 24 hours.",
-    "అభినందనలు! మీరు 50 లక్షల లాటరీ గెలుచుకున్నారు. మీ బహుమతి పొందడానికి ఇప్పుడే క్లిక్ చేయండి: http://lottery-win.tk/claim మరియు మీ ఆధార్ నంబర్ పంపండి.",
-    "Your UPI transaction of Rs. 250 to Swiggy is successful. UPI Ref: 123456789. Balance: Rs. 4,320. -HDFC Bank",
-    "URGENT: Your Aadhaar-linked mobile number will expire today. Update now: http://uidai-update.ml/renew to avoid disconnection.",
-    "आपका OTP है 847291। इसे किसी के साथ साझा न करें। अगर यह आपने नहीं मांगा तो 1800-111-109 पर कॉल करें। -HDFC Bank"
+    "Dear Customer, Your SBI account has been blocked. Click here to verify KYC immediately: http://sbi-kyc-update.xyz/verify",
+    "అభినందనలు! మీరు 50 లక్షల లాటరీ గెలుచుకున్నారు. క్లిక్ చేయండి: http://lottery-win.tk/claim",
+    "Your UPI transaction of Rs. 250 to Swiggy is successful. -HDFC Bank",
+    "URGENT: Your Aadhaar-linked mobile number will expire today. Update now: http://uidai-update.ml/renew",
+    "आपका OTP है 847291। इसे किसी के साथ साझा न करें।"
 ];
 
 let selectedLang = "English";
 
-// Language buttons
-document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        selectedLang = btn.dataset.lang;
-    });
-});
-
-function setEx(i) {
-    document.getElementById('msgInput').value = examples[i];
+// Add message to chat
+function addMessage(text, isUser = false) {
+    const chat = document.getElementById('chatMessages');
+    const div = document.createElement('div');
+    div.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
+    div.textContent = text;
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
 }
 
-function reset() {
-    document.getElementById('result').style.display = 'none';
-    document.getElementById('msgInput').value = '';
-    document.getElementById('msgInput').focus();
-}
-
-// Voice to Text
+// Voice Input
 const micBtn = document.getElementById('micBtn');
 let recognition;
 if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    recognition = new SpeechRecognition();
-    recognition.continuous = false;
-    recognition.interimResults = false;
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SR();
     recognition.lang = 'en-IN';
-
-    recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        const textarea = document.getElementById('msgInput');
-        textarea.value += (textarea.value ? ' ' : '') + transcript;
-        micBtn.style.background = 'var(--surface2)';
-    };
-    recognition.onerror = () => {
-        alert("Voice recognition failed. Please try again.");
-        micBtn.style.background = 'var(--surface2)';
+    recognition.onresult = e => {
+        document.getElementById('userInput').value = e.results[0][0].transcript;
     };
 }
-
 micBtn.addEventListener('click', () => {
-    if (!recognition) {
-        alert("Voice input is not supported in this browser. Please use Chrome or Edge.");
-        return;
+    if (recognition) {
+        micBtn.style.background = '#ff4d4d';
+        recognition.start();
+        setTimeout(() => micBtn.style.background = 'var(--surface2)', 3000);
+    } else {
+        alert("Voice input works best in Chrome/Edge");
     }
-    micBtn.style.background = '#ff4d4d';
-    recognition.start();
 });
 
 // Image Upload + OCR
@@ -457,116 +236,74 @@ uploadBtn.addEventListener('click', () => imageInput.click());
 imageInput.addEventListener('change', async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     uploadBtn.textContent = '⏳';
-    uploadBtn.disabled = true;
-
     try {
         const { createWorker } = Tesseract;
-        const worker = await createWorker(['eng', 'hin', 'tel', 'tam']);
-        const { data: { text } } = await worker.recognize(file);
+        const worker = await createWorker(['eng','hin','tel','tam']);
+        const { data } = await worker.recognize(file);
+        document.getElementById('userInput').value = data.text.trim();
         await worker.terminate();
-
-        document.getElementById('msgInput').value = text.trim();
-        alert("✅ Text extracted from image! Now click 'Scan for Phishing'.");
-    } catch (err) {
-        alert("Failed to extract text from image. Please try a clearer screenshot.");
+        alert("✅ Text extracted from image. Click Send.");
+    } catch(err) {
+        alert("Could not read the image clearly.");
     }
-
     uploadBtn.textContent = '📸';
-    uploadBtn.disabled = false;
 });
 
-// Analyze function
-async function analyze() {
-    const msg = document.getElementById('msgInput').value.trim();
-    const errEl = document.getElementById('errMsg');
-    errEl.style.display = 'none';
+// Send message
+async function sendMessage() {
+    const inputEl = document.getElementById('userInput');
+    const text = inputEl.value.trim();
+    if (!text) return;
 
-    if (!msg) {
-        errEl.textContent = 'Please paste a message, URL, or upload an image.';
-        errEl.style.display = 'block';
-        return;
-    }
+    addMessage(text, true);
+    inputEl.value = '';
 
-    document.getElementById('scanBtn').disabled = true;
-    document.getElementById('loading').style.display = 'block';
-    document.getElementById('result').style.display = 'none';
+    // Show loading
+    const chat = document.getElementById('chatMessages');
+    const loading = document.createElement('div');
+    loading.className = "ai-message message";
+    loading.textContent = "Analyzing...";
+    chat.appendChild(loading);
+    chat.scrollTop = chat.scrollHeight;
 
     try {
         const res = await fetch('/api/analyze', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: msg, language: selectedLang })
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                message: text,
+                language: selectedLang
+            })
         });
 
-        const r = await res.json();
-        if (r.error) throw new Error(r.error);
+        const data = await res.json();
+        chat.removeChild(loading);
 
-        showResult(r);
-    } catch (e) {
-        errEl.textContent = 'Analysis failed. Please try again.';
-        errEl.style.display = 'block';
-    } finally {
-        document.getElementById('scanBtn').disabled = false;
-        document.getElementById('loading').style.display = 'none';
+        if (data.error) {
+            addMessage("Sorry, I couldn't analyze that. Please try again.", false);
+        } else {
+            let response = `**Verdict:** ${data.verdict || 'SUSPICIOUS'} (${data.risk_score || 50}/100)\n\n`;
+            response += data.explanation || "No explanation available.";
+            if (data.safety_tip) response += `\n\n**Safety Tip:** ${data.safety_tip}`;
+            
+            addMessage(response, false);
+        }
+    } catch (err) {
+        chat.removeChild(loading);
+        addMessage("Connection error. Please check your internet and try again.", false);
     }
 }
 
-function showResult(r) {
-    const verdict = (r.verdict || 'SUSPICIOUS').toUpperCase();
-    const score = Math.min(100, Math.max(0, r.risk_score || 50));
+// Event Listeners
+document.getElementById('sendBtn').addEventListener('click', sendMessage);
 
-    const card = document.getElementById('verdictCard');
-    card.className = `verdict-card ${verdict.toLowerCase()}`;
-
-    const circle = document.getElementById('scoreCircle');
-    circle.style.setProperty('--score', score);
-    document.getElementById('scoreNum').textContent = score;
-
-    const emojis = { SAFE: '✅', SUSPICIOUS: '⚠️', PHISHING: '🚨' };
-    const titles = { SAFE: 'Safe to Proceed', SUSPICIOUS: 'Suspicious Activity', PHISHING: 'Phishing Detected' };
-    const subs = { SAFE: 'No major red flags found', SUSPICIOUS: 'Exercise caution', PHISHING: 'Do not click or share info' };
-
-    document.getElementById('verdictEmoji').textContent = emojis[verdict] || '⚠️';
-    document.getElementById('verdictTitle').textContent = titles[verdict] || verdict;
-    document.getElementById('verdictSub').textContent = subs[verdict] || '';
-
-    const flagsCard = document.getElementById('flagsCard');
-    if (r.red_flags && r.red_flags.length > 0) {
-        flagsCard.style.display = 'block';
-        document.getElementById('flagsList').innerHTML = r.red_flags.map(flag => `
-            <div class="flag-item">
-                <span style="color:#ff4d4d; font-size:20px;">●</span>
-                <span>${flag}</span>
-            </div>
-        `).join('');
-    } else {
-        flagsCard.style.display = 'none';
+document.getElementById('userInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
     }
-
-    document.getElementById('explanationBox').textContent = r.explanation || '';
-    document.getElementById('tipBox').textContent = r.safety_tip || 'Never share OTPs or click suspicious links.';
-
-    document.getElementById('result').style.display = 'block';
-    document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
-}
-
-function copyReport() {
-    const score = document.getElementById('scoreNum').textContent;
-    const title = document.getElementById('verdictTitle').textContent;
-    const explanation = document.getElementById('explanationBox').textContent;
-    const tip = document.getElementById('tipBox').textContent;
-
-    const text = `PhishGuard Report\nRisk Score: ${score}\nVerdict: ${title}\n\nExplanation:\n${explanation}\n\nSafety Tip:\n${tip}`;
-
-    navigator.clipboard.writeText(text).then(() => {
-        const btn = event.currentTarget;
-        const original = btn.textContent;
-        btn.textContent = '✅ Copied!';
-        setTimeout(() => btn.textContent = original, 2000);
-    });
-}
+});
 </script>
 </body>
 </html>
